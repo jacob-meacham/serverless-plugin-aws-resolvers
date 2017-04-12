@@ -8,7 +8,7 @@ const env = process.env.NODE_ENV || 'development'
 const DEV = env === 'development'
 
 const config = {
-  entry: ['./index'],
+  entry: ['./src'],
   output: {
     path: path.join(__dirname, '/build'),
     filename: 'bundle.js',
