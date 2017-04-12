@@ -1,0 +1,45 @@
+---
+extends: airbnb
+env:
+  node: true
+rules:
+  semi: ['error', 'never']
+  no-unused-vars: ['error', { varsIgnorePattern: '_', argsIgnorePattern: '_' }]
+  arrow-spacing: 'error'
+  constructor-super: 'error'
+  generator-star-spacing: 'off' # TODO: Turn this back on when it's fixed
+  # http://eslint.org/docs/rules/max-len
+  max-len: ['error', 120, 2, {
+    ignoreUrls: true,
+      ignoreComments: false,
+      ignoreRegExpLiterals: true,
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true
+    }
+  ]
+  no-class-assign: 'error'
+  no-const-assign: 'error'
+  no-dupe-class-members: 'error'
+  no-var: 'error'
+  object-shorthand: 'error'
+  prefer-arrow-callback: 'warn'
+  prefer-const: 'error'
+  prefer-spread: 'error'
+  space-before-function-paren: ['error', 'never']
+  consistent-return: 'error'
+  default-case: 'error'
+  dot-notation: 'error'
+  no-invalid-this: 'error'
+  no-undefined: 'error'
+  camelcase: 'error'
+  no-lonely-if: 'error'
+  keyword-spacing: 'error'
+  spaced-comment: 'off'
+  comma-dangle: ['error', 'only-multiline']
+  arrow-body-style: 'off'
+  no-multi-str: 'off'
+  no-console: 'off'
+  no-restricted-syntax: [ "off", "ForOfStatement" ]
+  global-require: 'warn'
+  no-underscore-dangle: 'off'
+  import/no-extraneous-dependencies: ['off', { devDependencies: ['test/**/*.js', 'webpack.config.js']}]

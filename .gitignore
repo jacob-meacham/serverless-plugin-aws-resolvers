@@ -1,0 +1,10 @@
+# JetBrains
+.idea/
+
+# NPM
+node_modules/
+.npmdebug
+npm-debug.log
+
+# Build artifact
+build/

@@ -1,0 +1,59 @@
+{
+  "name": "serverless-aws-resolvers",
+  "version": "0.1.0",
+  "description": "Plugin that resolves deployed AWS services into variables",
+  "main": "build/bundle.js",
+  "files": [
+    "build/"
+  ],
+  "engines": {
+    "node": ">=7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DopplerLabs/backend-infrastructure.git"
+  },
+  "keywords": [
+    "aws",
+    "aws lambda",
+    "amazon",
+    "amazon web services",
+    "serverless",
+    "dopplerlabs.com"
+  ],
+  "author": "dopplerlabs.com",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/DopplerLabs/backend-infrastructure/issues"
+  },
+  "homepage": "https://github.com/DopplerLabs/backend-infrastructure",
+  "dependencies": {
+    "aws-sdk": "2.41.0",
+    "babel-runtime": "6.20.0",
+    "deasync-promise": "1.0.1",
+    "lodash": "4.17.4",
+    "winston": "2.3.0"
+  },
+  "devDependencies": {
+    "babel-cli": "6.18.0",
+    "babel-core": "6.21.0",
+    "babel-loader": "6.2.10",
+    "babel-plugin-transform-runtime": "6.15.0",
+    "babel-preset-env": "1.2.2",
+    "babel-preset-stage-1": "6.24.1",
+    "eslint": "3.19.0",
+    "eslint-config-airbnb": "14.0.0",
+    "eslint-plugin-import": "2.2.0",
+    "eslint-plugin-jsx-a11y": "3.0.2",
+    "eslint-plugin-react": "6.9.0",
+    "rimraf": "2.5.4",
+    "webpack": "2.3.1",
+    "webpack-node-externals": "1.5.4"
+  },
+  "scripts": {
+    "clean": "rimraf build && mkdir build",
+    "check": "eslint .",
+    "build": "npm run clean && npm run check && webpack"
+  }
+}
