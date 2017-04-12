@@ -39,11 +39,26 @@ async function getValueFromAws(variableString, region) {
 }
 
 class ServerlessAWSResolvers {
-  constructor(serverless) {
+  constructor(serverless, options) {
     this.provider = 'aws'
 
-    this.commands = {}
-    this.hooks = {}
+    this.commands = {
+      resolveAwsKey: {
+        usage: `Resolves an AWS key (Supported prefixes: ${Object.keys(AWS_HANDLERS)})`,
+        lifecycleEvents: ['run'],
+        options: {
+          key: {
+            usage: 'The key to resolve',
+            shortcut: 'k'
+          }
+        }
+      }
+    }
+
+    this.hooks = {
+      'resolveAwsKey:run': () => getValueFromAws(options.key, serverless.service.provider.region)
+        .then(_.bind(serverless.cli.log, serverless.cli))
+    }
 
     const delegate = _.bind(serverless.variables.getValueFromSource, serverless.variables)
     serverless.variables.getValueFromSource = function getValueFromSource(variableString) { // eslint-disable-line no-param-reassign, max-len
