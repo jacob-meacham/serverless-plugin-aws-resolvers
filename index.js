@@ -5,8 +5,16 @@ import winston from 'winston'
 
 const AWS_PREFIX = 'aws'
 
-async function getESSValue() {
-  throw new Error('ESS variables not yet supported')
+async function getESSValue(key, commonParameters) {
+  winston.debug(`Resolving ElasticSearch cluster with name ${key}`)
+  // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ES.html#describeElasticsearchDomain-property
+  const ess = new AWS.ES({ ...commonParameters, apiVersion: '2015-01-01' })
+  const result = await ess.describeElasticsearchDomain({ DomainName: key }).promise()
+  if (!result || !result.DomainStatus) {
+    throw new Error(`Could not find ElasticSearch cluster with name ${key}`)
+  }
+
+  return result.DomainStatus
 }
 
 async function getKinesisValue(key, commonParameters) {
@@ -14,7 +22,7 @@ async function getKinesisValue(key, commonParameters) {
   // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#describeStream-property
   const kinesis = new AWS.Kinesis({ ...commonParameters, apiVersion: '2013-12-02' })
   const result = await kinesis.describeStream({ StreamName: key }).promise()
-  return result.StreamDescription.StreamARN
+  return result.StreamDescription
 }
 
 const AWS_HANDLERS = {
@@ -24,14 +32,24 @@ const AWS_HANDLERS = {
 
 
 async function getValueFromAws(variableString, region) {
+  // The format is aws:${service}:${key}:${request}. eg.: aws:kinesis:stream-name:StreamARN
   const rest = variableString.split(`${AWS_PREFIX}:`)[1]
-  for (const key of Object.keys(AWS_HANDLERS)) {
-    if (rest.startsWith(`${key}:`)) {
+  for (const service of Object.keys(AWS_HANDLERS)) {
+    if (rest.startsWith(`${service}:`)) {
       const commonParameters = {}
       if (region) {
         commonParameters.region = region
       }
-      return AWS_HANDLERS[key](rest.split(`${key}:`)[1], commonParameters)
+
+      // Parse out the key and request
+      const [key, request] = rest.split(`${service}:`)[1].split(':')
+      const description = await AWS_HANDLERS[service](key, commonParameters) // eslint-disable-line no-await-in-loop, max-len
+      // Validate that the desired property exists
+      if (!_.has(description, request)) {
+        throw new Error(`Error resolving ${variableString}. Key '${request}' not found. Candidates are ${Object.keys(description)}`)
+      }
+
+      return description[request]
     }
   }
 
