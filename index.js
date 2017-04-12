@@ -25,9 +25,22 @@ async function getKinesisValue(key, commonParameters) {
   return result.StreamDescription
 }
 
+async function getRDSValue(key, commonParameters) {
+  winston.debug(`Resolving RDS database with name ${key}`)
+  // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
+  const rds = new AWS.RDS({ ...commonParameters, apiVersion: '2014-10-31' })
+  const instances = await rds.describeDBInstances({ DBInstanceIdentifier: key })
+  if (!instances || instances.length !== 1) {
+    throw new Error(`Expected exactly one DB instance for key ${key}. Got ${instances.length}`)
+  }
+
+  return instances[0]
+}
+
 const AWS_HANDLERS = {
   ess: getESSValue,
-  kinesis: getKinesisValue
+  kinesis: getKinesisValue,
+  rds: getRDSValue
 }
 
 
