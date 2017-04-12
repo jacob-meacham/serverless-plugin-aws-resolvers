@@ -29,9 +29,15 @@ async function getRDSValue(key, commonParameters) {
   winston.debug(`Resolving RDS database with name ${key}`)
   // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   const rds = new AWS.RDS({ ...commonParameters, apiVersion: '2014-10-31' })
-  const instances = await rds.describeDBInstances({ DBInstanceIdentifier: key })
-  if (!instances || instances.length !== 1) {
-    throw new Error(`Expected exactly one DB instance for key ${key}. Got ${instances.length}`)
+  const result = await rds.describeDBInstances({ DBInstanceIdentifier: key }).promise()
+  if (!result) {
+    throw new Error(`Could Not find any databases with identifier ${key}`)
+  }
+  // Parse out the instances
+  const instances = result.DBInstances
+
+  if (instances.length !== 1) {
+    throw new Error(`Expected exactly one DB instance for key ${key}. Got ${Object.keys(instances)}`)
   }
 
   return instances[0]
@@ -62,7 +68,7 @@ async function getValueFromAws(variableString, region) {
         throw new Error(`Error resolving ${variableString}. Key '${request}' not found. Candidates are ${Object.keys(description)}`)
       }
 
-      return description[request]
+      return _.get(description, request)
     }
   }
 
@@ -88,6 +94,7 @@ class ServerlessAWSResolvers {
 
     this.hooks = {
       'resolveAwsKey:run': () => getValueFromAws(options.key, serverless.service.provider.region)
+        .then(JSON.stringify)
         .then(_.bind(serverless.cli.log, serverless.cli))
     }
 
