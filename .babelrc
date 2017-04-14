@@ -5,10 +5,12 @@
         "node": 7.0
       },
       "useBuiltIns": true
-    }],
-    "stage-1"
+    }]
   ],
   "plugins": [
-    "transform-runtime"
+    "transform-runtime",
+    ["transform-object-rest-spread", {
+      "useBuiltIns": true
+    }]
   ]
 }

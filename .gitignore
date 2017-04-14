@@ -8,3 +8,6 @@ npm-debug.log
 
 # Build artifact
 build/
+
+# Generated docs
+doc/

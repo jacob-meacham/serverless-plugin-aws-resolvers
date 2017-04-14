@@ -5,10 +5,15 @@ import winston from 'winston'
 
 const AWS_PREFIX = 'aws'
 
-async function getESSValue(key, commonParameters) {
+/**
+ * @param key the name of the ElasticSearch cluster to resolve
+ * @param awsParameters parameters to pass to the AWS.ES constructor
+ * @returns {Promise<AWS.ES.ElasticsearchDomainStatus>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ES.html#describeElasticsearchDomain-property
+ */
+async function getESSValue(key, awsParameters) {
   winston.debug(`Resolving ElasticSearch cluster with name ${key}`)
-  // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ES.html#describeElasticsearchDomain-property
-  const ess = new AWS.ES({ ...commonParameters, apiVersion: '2015-01-01' })
+  const ess = new AWS.ES({ ...awsParameters, apiVersion: '2015-01-01' })
   const result = await ess.describeElasticsearchDomain({ DomainName: key }).promise()
   if (!result || !result.DomainStatus) {
     throw new Error(`Could not find ElasticSearch cluster with name ${key}`)
@@ -17,18 +22,28 @@ async function getESSValue(key, commonParameters) {
   return result.DomainStatus
 }
 
-async function getKinesisValue(key, commonParameters) {
+/**
+ * @param key the name of the Kinesis stream to resolve
+ * @param awsParameters parameters to pass to the AWS.Kinesis constructor
+ * @returns {Promise<AWS.Kinesis.StreamDescription>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#describeStream-property
+ */
+async function getKinesisValue(key, awsParameters) {
   winston.debug(`Resolving Kinesis stream with name ${key}`)
-  // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#describeStream-property
-  const kinesis = new AWS.Kinesis({ ...commonParameters, apiVersion: '2013-12-02' })
+  const kinesis = new AWS.Kinesis({ ...awsParameters, apiVersion: '2013-12-02' })
   const result = await kinesis.describeStream({ StreamName: key }).promise()
   return result.StreamDescription
 }
 
-async function getRDSValue(key, commonParameters) {
+/**
+ * @param key the name of the RDS instance to resolve
+ * @param awsParameters parameters to pass to the AWS.RDS constructor
+ * @returns {Promise.<AWS.RDS.DBInstance>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
+ */
+async function getRDSValue(key, awsParameters) {
   winston.debug(`Resolving RDS database with name ${key}`)
-  // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
-  const rds = new AWS.RDS({ ...commonParameters, apiVersion: '2014-10-31' })
+  const rds = new AWS.RDS({ ...awsParameters, apiVersion: '2014-10-31' })
   const result = await rds.describeDBInstances({ DBInstanceIdentifier: key }).promise()
   if (!result) {
     throw new Error(`Could Not find any databases with identifier ${key}`)
@@ -49,9 +64,21 @@ const AWS_HANDLERS = {
   rds: getRDSValue
 }
 
+const AWS_PATTERN = /^aws:\w+:[\w-]+:\w+$/
 
+/**
+ * @param variableString the variable to resolve
+ * @param region the AWS region to use
+ * @returns {Promise.<String>} a promise for the resolved variable
+ * @example const myResolvedVariable = await getValueFromAws('aws:kinesis:my-stream:StreamARN', 'us-east-1')
+ */
 async function getValueFromAws(variableString, region) {
   // The format is aws:${service}:${key}:${request}. eg.: aws:kinesis:stream-name:StreamARN
+  // Validate the input format
+  if (!variableString.match(AWS_PATTERN)) {
+    throw new Error(`Invalid AWS format for variable ${variableString}`)
+  }
+
   const rest = variableString.split(`${AWS_PREFIX}:`)[1]
   for (const service of Object.keys(AWS_HANDLERS)) {
     if (rest.startsWith(`${service}:`)) {
@@ -75,6 +102,9 @@ async function getValueFromAws(variableString, region) {
   throw new TypeError(`Cannot parse AWS type from ${rest}`)
 }
 
+/**
+ * A plugin for the serverless framework that allows resolution of deployed AWS services into variable names
+ */
 class ServerlessAWSResolvers {
   constructor(serverless, options) {
     this.provider = 'aws'
