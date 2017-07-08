@@ -8,7 +8,7 @@ import { expect } from 'chai'
 import Serverless from 'serverless'
 import ServerlessAWSResolvers from '../src'
 
-describe('ServerlessAWSResolvers', function() {
+describe('ServerlessAWSResolvers', () => {
   const DEFAULT_VALUE = 'MY_VARIABLE_NAME'
 
   const CONFIGS = {
@@ -25,7 +25,7 @@ describe('ServerlessAWSResolvers', function() {
     }
   }
 
-  afterEach(function() {
+  afterEach(() => {
     AWS.restore()
   })
 
@@ -37,7 +37,7 @@ describe('ServerlessAWSResolvers', function() {
     return sls
   }
 
-  function testResolve({ scope, service, method, topLevel, testKey, testValue, serviceValue }) {
+  async function testResolve({ scope, service, method, topLevel, testKey, testValue, serviceValue }) {
     testKey = testKey || 'TEST_KEY'
     testValue = testValue || 'TEST_VALUE'
     if (!serviceValue) {
@@ -47,21 +47,21 @@ describe('ServerlessAWSResolvers', function() {
 
     const serverless = createFakeServerless()
 
-    AWS.mock(service, method, function (params, callback) {
+    AWS.mock(service, method, (params, callback) => {
       const result = {}
       result[topLevel] = serviceValue
       callback(null, result)
     })
 
     serverless.service.custom.myVariable = `\${aws:${scope}:test-name:${testKey}}`
-    serverless.variables.populateService()
+    await serverless.variables.populateService()
     assert.equal(serverless.service.custom.myVariable, testValue)
   }
 
   function testNotFound({ scope, service, method }) {
     const serverless = createFakeServerless()
 
-    AWS.mock(service, method, function(params, callback) {
+    AWS.mock(service, method, (params, callback) => {
       callback('Not found')
     })
 
@@ -69,22 +69,22 @@ describe('ServerlessAWSResolvers', function() {
     expect(serverless.variables.populateService).to.throw(Error)
   }
 
-  it('should pass through non-AWS variables', function() {
+  it('should pass through non-AWS variables', async () => {
     const serverless = createFakeServerless()
     serverless.service.custom.myVar = DEFAULT_VALUE
-    serverless.variables.populateService()
+    await serverless.variables.populateService()
     assert.equal(serverless.service.custom.myVar, DEFAULT_VALUE)
   })
 
   for (const service of Object.keys(CONFIGS)) {
-    it(`should resolve ${service}`, function() { testResolve(CONFIGS[service]) })
-    it(`should throw for ${service} not found`, function() { testNotFound(CONFIGS[service]) })
+    it(`should resolve ${service}`, () => { testResolve(CONFIGS[service]) })
+    it(`should throw for ${service} not found`, () => { testNotFound(CONFIGS[service]) })
   }
 
-  it('should throw for keys that are not present', function() {
+  it('should throw for keys that are not present', () => {
     const serverless = createFakeServerless()
 
-    AWS.mock('Kinesis', 'describeStream', function (params, callback) {
+    AWS.mock('Kinesis', 'describeStream', (params, callback) => {
       callback(null, { StreamDescription: { StreamARN: DEFAULT_VALUE } })
     })
 

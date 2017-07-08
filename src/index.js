@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import AWS from 'aws-sdk'
-import deasyncPromise from 'deasync-promise'
 import winston from 'winston'
 
 const AWS_PREFIX = 'aws'
@@ -135,7 +134,7 @@ class ServerlessAWSResolvers {
         throw new Error('Cannot hydrate AWS variables without a region')
       }
       if (variableString.startsWith(`${AWS_PREFIX}:`)) {
-        return deasyncPromise(getValueFromAws(variableString, region))
+        return getValueFromAws(variableString, region)
       }
 
       return delegate(variableString)
