@@ -8,6 +8,10 @@ npm-debug.log
 
 # Build artifact
 build/
+.coverage
 
 # Generated docs
 doc/
+
+# OS
+.DS_Store
