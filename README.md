@@ -19,7 +19,7 @@ Given a service, a key, and a property, this plugin will resolve the variable di
 
 This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k aws:ess:my_cluster_name:Endpoint`
 
-See the [wiki]() for full esdoc.
+See our [webpage](https://dopplerlabs.github.io/serverless-plugin-aws-resolvers/) for full documentation.
 
 # Version History
 * 1.0.0
