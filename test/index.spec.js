@@ -21,7 +21,7 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'DBInstances',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{ testKey: 'test-value' }],
+      serviceValue: [{ testKey: 'test-value' }]
     }
   }
 
@@ -62,7 +62,7 @@ describe('ServerlessAWSResolvers', () => {
     const serverless = createFakeServerless()
 
     AWS.mock(service, method, (params, callback) => {
-      callback('Not found')
+      callback(new Error('Not found'))
     })
 
     serverless.service.custom.myVariable = `\${aws:${scope}:test-name:TEST_KEY}`
@@ -88,7 +88,7 @@ describe('ServerlessAWSResolvers', () => {
       callback(null, { StreamDescription: { StreamARN: DEFAULT_VALUE } })
     })
 
-    serverless.service.custom.foo = '${aws:kinesis:test-stream:BAD_KEY}'
+    serverless.service.custom.foo = '${aws:kinesis:test-stream:BAD_KEY}' // eslint-disable-line
     expect(serverless.variables.populateService).to.throw(Error)
   })
 })

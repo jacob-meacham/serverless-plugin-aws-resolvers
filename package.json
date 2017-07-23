@@ -1,17 +1,18 @@
 {
-  "name": "serverless-aws-resolvers",
+  "name": "serverless-plugin-aws-resolvers",
   "version": "1.0.0",
   "description": "Plugin that resolves deployed AWS services into variables",
-  "main": "build/bundle.js",
+  "main": "lib/index.js",
   "files": [
-    "build/"
+    "lib",
+    "src"
   ],
   "engines": {
     "node": ">=7.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DopplerLabs/backend-infrastructure.git"
+    "url": "git+https://github.com/DopplerLabs/serverless-plugin-aws-resolvers.git"
   },
   "keywords": [
     "aws",
@@ -21,47 +22,67 @@
     "serverless",
     "dopplerlabs.com"
   ],
-  "author": "dopplerlabs.com",
-  "license": "UNLICENSED",
-  "private": true,
+  "author": "Matt Sills",
+  "contributors": [
+    {
+      "name": "Jacob Meacham",
+      "url": "http://jemonjam.com/"
+    }
+  ],
+  "license": "MIT",
+  "private": false,
   "bugs": {
-    "url": "https://github.com/DopplerLabs/backend-infrastructure/issues"
+    "url": "https://github.com/DopplerLabs/serverless-plugin-aws-resolvers/issues"
   },
-  "homepage": "https://github.com/DopplerLabs/backend-infrastructure",
+  "homepage": "https://github.com/DopplerLabs/serverless-plugin-aws-resolvers",
+  "scripts": {
+    "clean": "rimraf lib && mkdir lib",
+    "test": "cross-env NODE_ENV=test nyc mocha --compilers js:babel-register test/",
+    "test:watch": "mocha --compilers js:babel-register --watch test/",
+    "check": "eslint . && npm run test",
+    "build:node": "cross-env BABEL_ENV=production babel src --out-dir lib",
+    "build": "npm run clean && npm run check && npm run build:node",
+    "docs": "esdoc .",
+    "docs:deploy": "npm run docs && gh-pages -d doc",
+    "ci:coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
   "dependencies": {
     "aws-sdk": "2.41.0",
-    "babel-runtime": "6.20.0",
+    "babel-runtime": "6.23.0",
     "lodash": "4.17.4",
-    "winston": "2.3.0"
+    "winston": "2.3.1"
   },
   "devDependencies": {
     "aws-sdk-mock": "1.6.1",
-    "babel-cli": "6.18.0",
-    "babel-core": "6.21.0",
-    "babel-loader": "6.2.10",
+    "babel-cli": "6.24.1",
+    "babel-core": "6.25.0",
+    "babel-eslint": "7.2.3",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-istanbul": "^4.1.4",
     "babel-plugin-transform-object-rest-spread": "6.23.0",
-    "babel-plugin-transform-runtime": "6.15.0",
-    "babel-preset-env": "1.2.2",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-preset-env": "1.6.0",
+    "babel-register": "6.24.1",
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
+    "coveralls": "2.13.1",
+    "cross-env": "5.0.1",
     "esdoc": "0.5.2",
     "eslint": "3.19.0",
-    "eslint-config-airbnb": "14.0.0",
-    "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "3.0.2",
-    "eslint-plugin-react": "6.9.0",
+    "eslint-config-standard": "10.2.1",
+    "eslint-plugin-import": "2.7.0",
+    "eslint-plugin-mocha": "4.11.0",
+    "eslint-plugin-node": "5.1.1",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-standard": "3.0.1",
+    "gh-pages": "1.0.0",
     "mocha": "3.2.0",
     "mocha-sinon": "2.0.0",
-    "rimraf": "2.5.4",
-    "serverless": "1.17.0",
-    "webpack": "2.3.1",
-    "webpack-node-externals": "1.5.4"
+    "nyc": "11.0.3",
+    "rimraf": "2.6.1",
+    "serverless": "1.17.0"
   },
-  "scripts": {
-    "clean": "rimraf build && mkdir build",
-    "test": "mocha --compilers js:babel-core/register test/",
-    "check": "eslint src/ && npm run test",
-    "build": "npm run clean && npm run check && webpack",
-    "docs": "esdoc ."
+  "peerDependencies": {
+    "serverless": ">=1.16.0"
   }
 }
