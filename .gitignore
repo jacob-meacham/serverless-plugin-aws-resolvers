@@ -1,5 +1,6 @@
-# JetBrains
+# IDEs
 .idea/
+.vscode/
 
 # NPM
 node_modules/
@@ -7,8 +8,10 @@ node_modules/
 npm-debug.log
 
 # Build artifact
-build/
+lib/
 .coverage
+coverage
+.nyc_output
 
 # Generated docs
 doc/

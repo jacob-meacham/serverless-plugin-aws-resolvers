@@ -1,0 +1,12 @@
+language: node_js
+node_js: '7'
+cache: yarn
+script: npm run build
+after_success: npm run docs && npm run ci:coverage
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: doc
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: develop
