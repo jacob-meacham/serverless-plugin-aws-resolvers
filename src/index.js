@@ -22,6 +22,66 @@ async function getESSValue(key, awsParameters) {
 }
 
 /**
+ * @param key the name of the security group to resolve
+ * @param awsParameters parameters to pass to the AWS.EC2 constructor
+ * @returns {Promise<AWS.EC2.SecurityGroup>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
+ */
+async function getSecurityGroupValue(key, awsParameters) {
+  winston.debug(`Resolving security group with name ${key}`)
+  const ec2 = new AWS.EC2({...awsParameters, apiVersion: '2015-01-01'})
+  const result = await ec2.describeSecurityGroups(
+    {
+      Filters: [{Name: 'group-name', Values: [key]},
+        {Name: 'vpc-id', Values: [key]}]
+    }).promise()
+
+  if (!result || !result.SecurityGroups.length) {
+    throw new Error(`Could not find security group with name ${key}`)
+  }
+
+  return result.SecurityGroups[0]
+}
+
+/**
+ * @param key the name of the VPC to resolve
+ * @param awsParameters parameters to pass to the AWS.EC2 constructor
+ * @returns {Promise<AWS.EC2.DescribeVpcs>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+ */
+async function getVPCValue(key, awsParameters) {
+  winston.debug(`Resolving vpc with name ${key}`)
+  const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
+  const result = await ec2.describeVpcs(
+    {Filters: [{Name: 'tag-value', Values: [key]}]}).promise()
+
+  if (!result || !result.Vpcs.length) {
+    throw new Error(`Could not find vpc with name ${key}`)
+  }
+
+  return result.Vpcs[0]
+}
+
+/**
+ * @param key the name of the subnet to resolve
+ * @param awsParameters parameters to pass to the AWS.EC2 constructor
+ * @returns {Promise<AWS.EC2.DescribeSubnets>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSubnets-property
+ */
+async function getSubnetValue(key, awsParameters) {
+  winston.debug(`Resolving subnet with name ${key}`)
+  const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
+  const result = await ec2.describeSubnets(
+    {Filters: [{Name: 'tag-value', Values: [key]}]}).promise()
+
+  if (!result || !result.Subnets.length) {
+    throw new Error(`Could not find subnet with name ${key}`)
+  }
+
+  return result.Subnets[0]
+}
+
+/**
  * @param key the name of the Kinesis stream to resolve
  * @param awsParameters parameters to pass to the AWS.Kinesis constructor
  * @returns {Promise<AWS.Kinesis.StreamDescription>}
@@ -60,7 +120,10 @@ async function getRDSValue(key, awsParameters) {
 const AWS_HANDLERS = {
   ess: getESSValue,
   kinesis: getKinesisValue,
-  rds: getRDSValue
+  rds: getRDSValue,
+  securityGroup: getSecurityGroupValue,
+  vpc: getVPCValue,
+  subnet: getSubnetValue
 }
 
 const AWS_PATTERN = /^aws:\w+:[\w-]+:\w+$/

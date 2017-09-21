@@ -22,6 +22,33 @@ describe('ServerlessAWSResolvers', () => {
       testKey: 'testKey',
       testValue: 'test-value',
       serviceValue: [{ testKey: 'test-value' }]
+    },
+    SECURITY_GROUP: {
+      scope: 'ec2',
+      service: 'EC2',
+      method: 'describeSecurityGroups',
+      topLevel: 'SecurityGroups',
+      testKey: 'testKey',
+      testValue: 'test-value',
+      serviceValue: [{testKey: 'test-value'}]
+    },
+    VPC: {
+      scope: 'ec2',
+      service: 'EC2',
+      method: 'describeVpcs',
+      topLevel: 'Vpcs',
+      testKey: 'testKey',
+      testValue: 'test-value',
+      serviceValue: [{testKey: 'test-value'}]
+    },
+    SUBNET: {
+      scope: 'ec2',
+      service: 'EC2',
+      method: 'describeSubnets',
+      topLevel: 'Subnets',
+      testKey: 'testKey',
+      testValue: 'test-value',
+      serviceValue: [{testKey: 'test-value'}]
     }
   }
 
