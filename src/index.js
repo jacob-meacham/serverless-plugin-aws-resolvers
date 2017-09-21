@@ -30,10 +30,14 @@ async function getESSValue(key, awsParameters) {
 async function getSecurityGroupValue(key, awsParameters) {
   winston.debug(`Resolving security group with name ${key}`)
   const ec2 = new AWS.EC2({...awsParameters, apiVersion: '2015-01-01'})
+
+  const values = key.split('-')
+
+  const vpcId = await getVPCValue(values[0], awsParameters)
   const result = await ec2.describeSecurityGroups(
     {
-      Filters: [{Name: 'group-name', Values: [key]},
-        {Name: 'vpc-id', Values: [key]}]
+      Filters: [{Name: 'group-name', Values: [values[1]]},
+        {Name: 'vpc-id', Values: [vpcId]}]
     }).promise()
 
   if (!result || !result.SecurityGroups.length) {
