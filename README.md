@@ -13,9 +13,9 @@ custom:
   # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   rds: ${aws:rds:my_db_name:InstanceCreateTime}
   kinesis: ${aws:kinesis:my_kinesis_stream:StreamARN}
-  securityGroup: ${aws:ec2:my_vpc-my_group_name:GroupId}
-  vpc: ${aws.ec2:my_vpc_name:VpcId}
-  subnet: ${aws.ec2.my_subnet_name:SubnetId}
+  securityGroup: ${aws:ec2:securityGroup:my_vpc_name-my_group_name:GroupId}
+  subnet: ${aws:ec2:subnet:my_subnet_name:SubnetId}
+  vpc: ${aws:ec2:vpc:my_vpc_name:VpcId}
 ```
 
 Given a service, a key, and a property, this plugin will resolve the variable directly from AWS. This uses the IAM role of the executor of the serverless binary.

@@ -4,7 +4,7 @@
 
 import AWS from 'aws-sdk-mock'
 import assert from 'assert'
-import { expect } from 'chai'
+import {expect} from 'chai'
 import Serverless from 'serverless'
 import ServerlessAWSResolvers from '../src'
 
@@ -21,31 +21,34 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'DBInstances',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{ testKey: 'test-value' }]
+      serviceValue: [{testKey: 'test-value'}]
     },
-    SECURITY_GROUP: {
+    EC2SecurityGroup: {
       scope: 'ec2',
       service: 'EC2',
       method: 'describeSecurityGroups',
       topLevel: 'SecurityGroups',
+      subService: 'securityGroup',
       testKey: 'testKey',
       testValue: 'test-value',
       serviceValue: [{testKey: 'test-value'}]
     },
-    VPC: {
+    EC2VPC: {
       scope: 'ec2',
       service: 'EC2',
       method: 'describeVpcs',
       topLevel: 'Vpcs',
+      subService: 'vpc',
       testKey: 'testKey',
       testValue: 'test-value',
       serviceValue: [{testKey: 'test-value'}]
     },
-    SUBNET: {
+    EC2Subnet: {
       scope: 'ec2',
       service: 'EC2',
       method: 'describeSubnets',
       topLevel: 'Subnets',
+      subService: 'subnet',
       testKey: 'testKey',
       testValue: 'test-value',
       serviceValue: [{testKey: 'test-value'}]
@@ -64,7 +67,7 @@ describe('ServerlessAWSResolvers', () => {
     return sls
   }
 
-  async function testResolve({ scope, service, method, topLevel, testKey, testValue, serviceValue }) {
+  async function testResolve({scope, service, method, topLevel, subService, testKey, testValue, serviceValue}) {
     testKey = testKey || 'TEST_KEY'
     testValue = testValue || 'TEST_VALUE'
     if (!serviceValue) {
@@ -80,19 +83,24 @@ describe('ServerlessAWSResolvers', () => {
       callback(null, result)
     })
 
-    serverless.service.custom.myVariable = `\${aws:${scope}:test-name:${testKey}}`
+    if (subService) {
+      serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}}`
+    } else {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}}`
+    }
+
     await serverless.variables.populateService()
     assert.equal(serverless.service.custom.myVariable, testValue)
   }
 
-  function testNotFound({ scope, service, method }) {
+  function testNotFound({scope, service, method}) {
     const serverless = createFakeServerless()
 
     AWS.mock(service, method, (params, callback) => {
       callback(new Error('Not found'))
     })
 
-    serverless.service.custom.myVariable = `\${aws:${scope}:test-name:TEST_KEY}`
+    serverless.service.custom.myVariable = `\${aws:${scope}:TEST_KEY}`
     expect(serverless.variables.populateService).to.throw(Error)
   }
 
@@ -104,15 +112,19 @@ describe('ServerlessAWSResolvers', () => {
   })
 
   for (const service of Object.keys(CONFIGS)) {
-    it(`should resolve ${service}`, () => { testResolve(CONFIGS[service]) })
-    it(`should throw for ${service} not found`, () => { testNotFound(CONFIGS[service]) })
+    it(`should resolve ${service}`, () => {
+      testResolve(CONFIGS[service])
+    })
+    it(`should throw for ${service} not found`, () => {
+      testNotFound(CONFIGS[service])
+    })
   }
 
   it('should throw for keys that are not present', () => {
     const serverless = createFakeServerless()
 
     AWS.mock('Kinesis', 'describeStream', (params, callback) => {
-      callback(null, { StreamDescription: { StreamARN: DEFAULT_VALUE } })
+      callback(null, {StreamDescription: {StreamARN: DEFAULT_VALUE}})
     })
 
     serverless.service.custom.foo = '${aws:kinesis:test-stream:BAD_KEY}' // eslint-disable-line
