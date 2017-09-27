@@ -28,7 +28,6 @@ async function getESSValue(key, awsParameters) {
  * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
  */
 async function getEC2Value(key, awsParameters) {
-  winston.debug(`Resolving security group with name ${key}`)
   const ec2 = new AWS.EC2({...awsParameters, apiVersion: '2015-01-01'})
 
   const values = key.split(':')
