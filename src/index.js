@@ -22,6 +22,76 @@ async function getESSValue(key, awsParameters) {
 }
 
 /**
+ * @param key the name of the security group to resolve
+ * @param awsParameters parameters to pass to the AWS.EC2 constructor
+ * @returns {Promise<AWS.EC2.SecurityGroup>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
+ */
+async function getEC2Value(key, awsParameters) {
+  const ec2 = new AWS.EC2({...awsParameters, apiVersion: '2015-01-01'})
+
+  const values = key.split(':')
+
+  if (values[0] === 'vpc') {
+    return getVPCValue(values[1], awsParameters)
+  } else if (values[0] === 'subnet') {
+    return getSubnetValue(values[1], awsParameters)
+  } else if (values[0] === 'securityGroup') {
+    const groupValues = values[1].split('-')
+    const vpc = await getVPCValue(groupValues[0], awsParameters)
+    const result = await ec2.describeSecurityGroups(
+      {
+        Filters: [{Name: 'group-name', Values: [groupValues[1]]},
+          {Name: 'vpc-id', Values: [vpc.VpcId]}]
+      }).promise()
+
+    if (!result || !result.SecurityGroups.length) {
+      throw new Error(`Could not find security group with name ${groupValues[1]} in ${vpc.VpcId}`)
+    }
+    return result.SecurityGroups[0]
+  }
+  throw new Error(`Unsupported EC2 value. ${values[0]}`)
+}
+
+/**
+ * @param key the name of the VPC to resolve
+ * @param awsParameters parameters to pass to the AWS.EC2 constructor
+ * @returns {Promise<AWS.EC2.DescribeVpcs>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+ */
+async function getVPCValue(key, awsParameters) {
+  winston.debug(`Resolving vpc with name ${key}`)
+  const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
+  const result = await ec2.describeVpcs(
+    {Filters: [{Name: 'tag-value', Values: [key]}]}).promise()
+
+  if (!result || !result.Vpcs.length) {
+    throw new Error(`Could not find vpc with name ${key}`)
+  }
+
+  return result.Vpcs[0]
+}
+
+/**
+ * @param key the name of the subnet to resolve
+ * @param awsParameters parameters to pass to the AWS.EC2 constructor
+ * @returns {Promise<AWS.EC2.DescribeSubnets>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSubnets-property
+ */
+async function getSubnetValue(key, awsParameters) {
+  winston.debug(`Resolving subnet with name ${key}`)
+  const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
+  const result = await ec2.describeSubnets(
+    {Filters: [{Name: 'tag-value', Values: [key]}]}).promise()
+
+  if (!result || !result.Subnets.length) {
+    throw new Error(`Could not find subnet with name ${key}`)
+  }
+
+  return result.Subnets[0]
+}
+
+/**
  * @param key the name of the Kinesis stream to resolve
  * @param awsParameters parameters to pass to the AWS.Kinesis constructor
  * @returns {Promise<AWS.Kinesis.StreamDescription>}
@@ -60,11 +130,12 @@ async function getRDSValue(key, awsParameters) {
 const AWS_HANDLERS = {
   ess: getESSValue,
   kinesis: getKinesisValue,
-  rds: getRDSValue
+  rds: getRDSValue,
+  ec2: getEC2Value
 }
 
-const AWS_PATTERN = /^aws:\w+:[\w-]+:\w+$/
-
+const DEFAULT_AWS_PATTERN = /^aws:\w+:[\w-.]+:\w+$/
+const SUB_SERVICE_AWS_PATTERN = /^aws:\w+:\w+:[\w-.]+:\w+$/
 /**
  * @param variableString the variable to resolve
  * @param region the AWS region to use
@@ -72,9 +143,10 @@ const AWS_PATTERN = /^aws:\w+:[\w-]+:\w+$/
  * @example const myResolvedVariable = await getValueFromAws('aws:kinesis:my-stream:StreamARN', 'us-east-1')
  */
 async function getValueFromAws(variableString, region) {
-  // The format is aws:${service}:${key}:${request}. eg.: aws:kinesis:stream-name:StreamARN
+  // The format is aws:${service}:${key}:${request} or aws:${service}:${subService}:${key}:${request}.
+  // eg.: aws:kinesis:stream-name:StreamARN
   // Validate the input format
-  if (!variableString.match(AWS_PATTERN)) {
+  if (!variableString.match(DEFAULT_AWS_PATTERN) && !variableString.match(SUB_SERVICE_AWS_PATTERN)) {
     throw new Error(`Invalid AWS format for variable ${variableString}`)
   }
 
@@ -87,7 +159,19 @@ async function getValueFromAws(variableString, region) {
       }
 
       // Parse out the key and request
-      const [key, request] = rest.split(`${service}:`)[1].split(':')
+      let subKey = rest.split(`${service}:`)[1]
+
+      let request = ''
+      let key = ''
+      // We are dealing with a subService instead of a standard service
+      if (variableString.match(SUB_SERVICE_AWS_PATTERN)) {
+        request = subKey.split(':')[2]
+        key = subKey.split(':').slice(0, 2).join(':')
+      } else {
+        request = subKey.split(':')[1]
+        key = subKey.split(':')[0]
+      }
+
       const description = await AWS_HANDLERS[service](key, commonParameters) // eslint-disable-line no-await-in-loop, max-len
       // Validate that the desired property exists
       if (!_.has(description, request)) {
