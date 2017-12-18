@@ -111,7 +111,7 @@ async function getKinesisValue(key, awsParameters) {
  * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
  */
 async function getDynamoDbValue(key, awsParameters) {
-  winston.debug(`Resolving Kinesis stream with name ${key}`)
+  winston.debug(`Resolving DynamoDB stream with name ${key}`)
   const dynamodb = new AWS.DynamoDB({ ...awsParameters, apiVersion: '2012-08-10' })
   const result = await dynamodb.describeTable({ TableName: key }).promise()
   return result.Table
