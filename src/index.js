@@ -105,6 +105,19 @@ async function getKinesisValue(key, awsParameters) {
 }
 
 /**
+ * @param key the name of the DynamoDb table to resolve
+ * @param awsParameters parameters to pass to the AWS.DynamoDB constructor
+ * @returns {Promise<AWS.DynamoDB.Table>}
+ * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
+ */
+async function getDynamoDbValue(key, awsParameters) {
+  winston.debug(`Resolving DynamoDB stream with name ${key}`)
+  const dynamodb = new AWS.DynamoDB({ ...awsParameters, apiVersion: '2012-08-10' })
+  const result = await dynamodb.describeTable({ TableName: key }).promise()
+  return result.Table
+}
+
+/**
  * @param key the name of the RDS instance to resolve
  * @param awsParameters parameters to pass to the AWS.RDS constructor
  * @returns {Promise.<AWS.RDS.DBInstance>}
@@ -130,6 +143,7 @@ async function getRDSValue(key, awsParameters) {
 const AWS_HANDLERS = {
   ess: getESSValue,
   kinesis: getKinesisValue,
+  dynamodb: getDynamoDbValue,
   rds: getRDSValue,
   ec2: getEC2Value
 }
