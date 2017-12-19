@@ -26,7 +26,9 @@ This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k 
 See our [webpage](https://dopplerlabs.github.io/serverless-plugin-aws-resolvers/) for full documentation.
 
 # Version History
+* 1.2.0
+  - Add support for DynamoDB stream ARN (thanks @geronimo-iia)
 * 1.1.0
-  - Add support for for EC2 resources (thanks @kevgliss)
+  - Add support for EC2 resources (thanks @kevgliss)
 * 1.0.0
   - Initial release
