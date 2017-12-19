@@ -3,7 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/DopplerLabs/serverless-plugin-aws-resolvers/badge.svg?branch=develop)](https://coveralls.io/github/DopplerLabs/serverless-plugin-aws-resolvers?branch=develop)
 [![Build Status](https://travis-ci.org/DopplerLabs/serverless-plugin-aws-resolvers.svg?branch=develop)](https://travis-ci.org/DopplerLabs/serverless-plugin-aws-resolvers)
 
-A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, or Kinesis.
+A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, dynamodb or Kinesis.
 
 # Usage
 ```yaml
@@ -13,6 +13,7 @@ custom:
   # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   rds: ${aws:rds:my_db_name:InstanceCreateTime}
   kinesis: ${aws:kinesis:my_kinesis_stream:StreamARN}
+  dynamodb: ${aws:dynamodb:my_dynamodb_table:LatestStreamArn}
   securityGroup: ${aws:ec2:securityGroup:my_vpc_name-my_group_name:GroupId}
   subnet: ${aws:ec2:subnet:my_subnet_name:SubnetId}
   vpc: ${aws:ec2:vpc:my_vpc_name:VpcId}
