@@ -1,7 +1,7 @@
 # serverless-plugin-aws-resolvers
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
-[![Coverage Status](https://coveralls.io/repos/github/DopplerLabs/serverless-plugin-aws-resolvers/badge.svg?branch=develop)](https://coveralls.io/github/DopplerLabs/serverless-plugin-aws-resolvers?branch=develop)
-[![Build Status](https://travis-ci.org/DopplerLabs/serverless-plugin-aws-resolvers.svg?branch=develop)](https://travis-ci.org/DopplerLabs/serverless-plugin-aws-resolvers)
+[![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-aws-resolvers/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/serverless-plugin-aws-resolvers?branch=develop)
+[![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers)
 
 A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, dynamodb or Kinesis.
 
@@ -23,7 +23,7 @@ Given a service, a key, and a property, this plugin will resolve the variable di
 
 This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k aws:ess:my_cluster_name:Endpoint`
 
-See our [webpage](https://dopplerlabs.github.io/serverless-plugin-aws-resolvers/) for full documentation.
+See our [webpage](https://jacob-meacham.github.io/serverless-plugin-aws-resolvers/) for full documentation.
 
 # Version History
 * 1.2.0
