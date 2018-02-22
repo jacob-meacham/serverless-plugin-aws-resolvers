@@ -26,6 +26,8 @@ This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k 
 See our [webpage](https://jacob-meacham.github.io/serverless-plugin-aws-resolvers/) for full documentation.
 
 # Version History
+* 1.2.1
+  - Allow object access for the variable name (thanks @rmbl)
 * 1.2.0
   - Add support for DynamoDB stream ARN (thanks @geronimo-iia)
 * 1.1.0
