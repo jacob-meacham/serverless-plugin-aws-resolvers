@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-aws-resolvers",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Plugin that resolves deployed AWS services into variables",
   "main": "lib/index.js",
   "files": [
@@ -12,15 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DopplerLabs/serverless-plugin-aws-resolvers.git"
+    "url": "git+https://github.com/jacob-meacham/serverless-plugin-aws-resolvers.git"
   },
   "keywords": [
     "aws",
     "aws lambda",
     "amazon",
     "amazon web services",
-    "serverless",
-    "dopplerlabs.com"
+    "serverless"
   ],
   "author": "Matt Sills",
   "contributors": [
@@ -32,9 +31,9 @@
   "license": "MIT",
   "private": false,
   "bugs": {
-    "url": "https://github.com/DopplerLabs/serverless-plugin-aws-resolvers/issues"
+    "url": "https://github.com/jacob-meacham/serverless-plugin-aws-resolvers/issues"
   },
-  "homepage": "https://github.com/DopplerLabs/serverless-plugin-aws-resolvers",
+  "homepage": "https://github.com/jacob-meacham/serverless-plugin-aws-resolvers",
   "scripts": {
     "clean": "rimraf lib && mkdir lib",
     "test": "cross-env NODE_ENV=test nyc mocha --compilers js:babel-register test/",

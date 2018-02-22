@@ -148,8 +148,8 @@ const AWS_HANDLERS = {
   ec2: getEC2Value
 }
 
-const DEFAULT_AWS_PATTERN = /^aws:\w+:[\w-.]+:\w+$/
-const SUB_SERVICE_AWS_PATTERN = /^aws:\w+:\w+:[\w-.]+:\w+$/
+const DEFAULT_AWS_PATTERN = /^aws:\w+:[\w-.]+:[\w.]+$/
+const SUB_SERVICE_AWS_PATTERN = /^aws:\w+:\w+:[\w-.]+:[\w.]+$/
 /**
  * @param variableString the variable to resolve
  * @param region the AWS region to use
