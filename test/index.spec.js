@@ -24,6 +24,15 @@ describe('ServerlessAWSResolvers', () => {
       testValue: 'test-value',
       serviceValue: [{testKey: 'test-value'}]
     },
+    RDSCHILDVAL: {
+      scope: 'rds',
+      service: 'RDS',
+      method: 'describeDBInstances',
+      topLevel: 'DBInstances',
+      testKey: 'testKey.testChild',
+      testValue: 'test-value',
+      serviceValue: [{testKey: {testChild: 'test-value'}}]
+    },
     EC2SecurityGroup: {
       scope: 'ec2',
       service: 'EC2',
