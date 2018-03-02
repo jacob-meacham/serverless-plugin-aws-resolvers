@@ -25,6 +25,27 @@ This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k 
 
 See our [webpage](https://jacob-meacham.github.io/serverless-plugin-aws-resolvers/) for full documentation.
 
+# Configurations
+
+This plugin has one available configuration option at the moment.
+
+```yaml
+custom:
+  awsResolvers:
+    strict: true
+```
+
+Disabling strict mode allows values of non-existing infrastructure to be overwritten by other values. This is especially useful when the serverless configuration also contains the CloudFormation template to create this infrastructure. On the first run the value would not be available and would prevent the template from being applied.
+
+Values can be overwritten like this:
+
+```yaml
+custom:
+  awsResolvers:
+    strict: false
+  rds: ${aws:rds:my_db_name:InstanceCreateTime, 'not created yet'}
+```
+
 # Version History
 * 1.2.1
   - Allow object access for the variable name (thanks @rmbl)
