@@ -114,6 +114,45 @@ describe('ServerlessAWSResolvers', () => {
     expect(serverless.variables.populateService).to.throw(Error)
   }
 
+  function testResolveStrictFallback({scope, service, method, subService, testKey}) {
+    const serverless = createFakeServerless()
+
+    serverless.service.custom.awsResolvers = {
+      strict: true
+    }
+    if (subService) {
+      serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}, 'test'}`
+    } else {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}, 'test'}`
+    }
+
+    AWS.mock(service, method, (params, callback) => {
+      callback(new Error('Not found'))
+    })
+
+    expect(serverless.variables.populateService).to.throw(Error)
+  }
+
+  async function testResolveFallback({scope, service, method, subService, testKey}) {
+    const serverless = createFakeServerless()
+
+    serverless.service.custom.awsResolvers = {
+      strict: false
+    }
+    if (subService) {
+      serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}, 'test'}`
+    } else {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}, 'test'}`
+    }
+
+    AWS.mock(service, method, (params, callback) => {
+      callback(new Error('Not found'))
+    })
+
+    await serverless.variables.populateService()
+    assert.equal(serverless.service.custom.myVariable, 'test')
+  }
+
   it('should pass through non-AWS variables', async () => {
     const serverless = createFakeServerless()
     serverless.service.custom.myVar = DEFAULT_VALUE
@@ -127,6 +166,12 @@ describe('ServerlessAWSResolvers', () => {
     })
     it(`should throw for ${service} not found`, () => {
       testNotFound(CONFIGS[service])
+    })
+    it(`should not resolve fallback value for ${service} in strict mode`, () => {
+      testResolveStrictFallback(CONFIGS[service])
+    })
+    it(`should resolve fallback value for ${service} in non-strict mode`, () => {
+      testResolveFallback(CONFIGS[service])
     })
   }
 

@@ -78,7 +78,7 @@
     "mocha-sinon": "2.0.0",
     "nyc": "11.0.3",
     "rimraf": "2.6.1",
-    "serverless": "1.17.0"
+    "serverless": "^1.17.0"
   },
   "peerDependencies": {
     "serverless": ">=1.16.0"
