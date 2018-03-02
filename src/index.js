@@ -128,7 +128,7 @@ async function getRDSValue(key, awsParameters) {
   const rds = new AWS.RDS({ ...awsParameters, apiVersion: '2014-10-31' })
   const result = await rds.describeDBInstances({ DBInstanceIdentifier: key }).promise()
   if (!result) {
-    throw new Error(`Could Not find any databases with identifier ${key}`)
+    throw new Error(`Could not find any databases with identifier ${key}`)
   }
   // Parse out the instances
   const instances = result.DBInstances
@@ -153,10 +153,11 @@ const SUB_SERVICE_AWS_PATTERN = /^aws:\w+:\w+:[\w-.]+:[\w.]+$/
 /**
  * @param variableString the variable to resolve
  * @param region the AWS region to use
+ * @param strictMode throw errors if aws can't find value or allow overwrite
  * @returns {Promise.<String>} a promise for the resolved variable
  * @example const myResolvedVariable = await getValueFromAws('aws:kinesis:my-stream:StreamARN', 'us-east-1')
  */
-async function getValueFromAws(variableString, region) {
+async function getValueFromAws(variableString, region, strictMode) {
   // The format is aws:${service}:${key}:${request} or aws:${service}:${subService}:${key}:${request}.
   // eg.: aws:kinesis:stream-name:StreamARN
   // Validate the input format
@@ -186,7 +187,18 @@ async function getValueFromAws(variableString, region) {
         key = subKey.split(':')[0]
       }
 
-      const description = await AWS_HANDLERS[service](key, commonParameters) // eslint-disable-line no-await-in-loop, max-len
+      let description
+      try {
+        description = await AWS_HANDLERS[service](key, commonParameters) // eslint-disable-line no-await-in-loop, max-len
+      } catch (e) {
+        if (strictMode) {
+          throw e
+        }
+
+        winston.debug(`Error while resolving ${variableString}: ${e.message}`)
+        return null
+      }
+
       // Validate that the desired property exists
       if (!_.has(description, request)) {
         throw new Error(`Error resolving ${variableString}. Key '${request}' not found. Candidates are ${Object.keys(description)}`)
@@ -228,11 +240,12 @@ class ServerlessAWSResolvers {
     const delegate = _.bind(serverless.variables.getValueFromSource, serverless.variables)
     serverless.variables.getValueFromSource = function getValueFromSource(variableString) { // eslint-disable-line no-param-reassign, max-len
       const region = serverless.service.provider.region
+      const strictMode = _.get(serverless.service.custom, 'awsResolvers.strict', true)
       if (!region) {
         throw new Error('Cannot hydrate AWS variables without a region')
       }
       if (variableString.startsWith(`${AWS_PREFIX}:`)) {
-        return getValueFromAws(variableString, region)
+        return getValueFromAws(variableString, region, strictMode)
       }
 
       return delegate(variableString)
