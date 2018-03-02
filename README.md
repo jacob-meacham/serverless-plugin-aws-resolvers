@@ -47,6 +47,8 @@ custom:
 ```
 
 # Version History
+* 1.3.0
+  - Add a strict mode flag and don't error on non-existing infrastructure when strict mode is not on (thanks @rmbl)
 * 1.2.1
   - Allow object access for the variable name (thanks @rmbl)
 * 1.2.0
