@@ -14,6 +14,7 @@ describe('ServerlessAWSResolvers', () => {
   const CONFIGS = {
     KINESIS: { scope: 'kinesis', service: 'Kinesis', method: 'describeStream', topLevel: 'StreamDescription' },
     DYNAMODB: { scope: 'dynamodb', service: 'DynamoDB', method: 'describeTable', topLevel: 'Table' },
+    ECS: { scope: 'ecs', service: 'ElastiCache', method: 'describeCacheClusters', topLevel: 'CacheCluster' },
     ESS: { scope: 'ess', service: 'ES', method: 'describeElasticsearchDomain', topLevel: 'DomainStatus' },
     RDS: {
       scope: 'rds',

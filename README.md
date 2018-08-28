@@ -17,6 +17,7 @@ custom:
   securityGroup: ${aws:ec2:securityGroup:my_vpc_name-my_group_name:GroupId}
   subnet: ${aws:ec2:subnet:my_subnet_name:SubnetId}
   vpc: ${aws:ec2:vpc:my_vpc_name:VpcId}
+  ecs: ${aws:ecs:cache_cluster_name:CacheClusterId}
 ```
 
 Given a service, a key, and a property, this plugin will resolve the variable directly from AWS. This uses the IAM role of the executor of the serverless binary.
@@ -24,6 +25,18 @@ Given a service, a key, and a property, this plugin will resolve the variable di
 This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k aws:ess:my_cluster_name:Endpoint`
 
 See our [webpage](https://jacob-meacham.github.io/serverless-plugin-aws-resolvers/) for full documentation.
+
+## Array access
+
+To access values in arrays (for example the ElastiCache Endpoint in CacheNodes), the `variableSyntax` of serverless needs to be amended.
+
+```yaml
+provider:
+  variableSyntax: "\\${([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)\\[\\]]+?)}"
+
+  environment:
+    ECS_ADDRESS: ${aws:ecs:ecs-instance:CacheNodes[0].Endpoint.Address}
+```
 
 # Configurations
 
