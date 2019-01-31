@@ -1,6 +1,19 @@
 import _ from 'lodash'
 import AWS from 'aws-sdk'
 import winston from 'winston'
+import url from 'url'
+import HttpsProxyAgent from 'https-proxy-agent'
+
+// Use HTTPS Proxy (Optional)
+const proxy = process.env.proxy ||
+  process.env.HTTP_PROXY ||
+  process.env.http_proxy ||
+  process.env.HTTPS_PROXY ||
+  process.env.https_proxy
+
+if (proxy) {
+  AWS.config.httpOptions.agent = new HttpsProxyAgent(url.parse(proxy))
+}
 
 const AWS_PREFIX = 'aws'
 
