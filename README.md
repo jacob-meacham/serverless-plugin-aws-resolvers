@@ -60,6 +60,8 @@ custom:
 ```
 
 # Version History
+* 1.3.2
+  - Fix security issue with lodash (thanks @rmbl)
 * 1.3.1
   - Add support for elasticache resources (thanks @rmbl)
 * 1.3.0
