@@ -63,7 +63,8 @@ describe('ServerlessAWSResolvers', () => {
       testKey: 'testKey',
       testValue: 'test-value',
       serviceValue: [{testKey: 'test-value'}]
-    }
+    },
+    CLOUDFORMATION: { scope: 'cf', service: 'CloudFormation', method: 'describeStackResource', topLevel: 'PhysicalResourceId' }
   }
 
   afterEach(() => {
