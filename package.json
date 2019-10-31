@@ -49,7 +49,8 @@
     "aws-sdk": "2.41.0",
     "babel-runtime": "6.23.0",
     "lodash": "4.17.11",
-    "winston": "2.3.1"
+    "winston": "2.3.1",
+    "https-proxy-agent": "2.2.1"
   },
   "devDependencies": {
     "aws-sdk-mock": "1.6.1",

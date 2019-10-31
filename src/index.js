@@ -5,11 +5,7 @@ import url from 'url'
 import HttpsProxyAgent from 'https-proxy-agent'
 
 // Use HTTPS Proxy (Optional)
-const proxy = process.env.proxy ||
-  process.env.HTTP_PROXY ||
-  process.env.http_proxy ||
-  process.env.HTTPS_PROXY ||
-  process.env.https_proxy
+const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY
 
 if (proxy) {
   AWS.config.httpOptions.agent = new HttpsProxyAgent(url.parse(proxy))
