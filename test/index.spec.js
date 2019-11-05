@@ -14,7 +14,15 @@ describe('ServerlessAWSResolvers', () => {
   const CONFIGS = {
     KINESIS: { scope: 'kinesis', service: 'Kinesis', method: 'describeStream', topLevel: 'StreamDescription' },
     DYNAMODB: { scope: 'dynamodb', service: 'DynamoDB', method: 'describeTable', topLevel: 'Table' },
-    ECS: { scope: 'ecs', service: 'ElastiCache', method: 'describeCacheClusters', topLevel: 'CacheCluster' },
+    ECS: {
+      scope: 'ecs',
+      service: 'ElastiCache',
+      method: 'describeCacheClusters',
+      topLevel: 'CacheClusters',
+      testKey: 'testKey',
+      testValue: 'test-value',
+      serviceValue: [{testKey: 'test-value'}]
+    },
     ESS: { scope: 'ess', service: 'ES', method: 'describeElasticsearchDomain', topLevel: 'DomainStatus' },
     RDS: {
       scope: 'rds',
@@ -64,7 +72,14 @@ describe('ServerlessAWSResolvers', () => {
       testValue: 'test-value',
       serviceValue: [{testKey: 'test-value'}]
     },
-    CLOUDFORMATION: { scope: 'cf', service: 'CloudFormation', method: 'describeStackResource', topLevel: 'PhysicalResourceId' }
+    CLOUDFORMATION: {
+      scope: 'cf',
+      service: 'CloudFormation',
+      method: 'describeStackResource',
+      topLevel: 'StackResourceDetail',
+      testKey: 'testKey',
+      testValue: 'test-value'
+    }
   }
 
   afterEach(() => {
@@ -97,6 +112,8 @@ describe('ServerlessAWSResolvers', () => {
 
     if (subService) {
       serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}}`
+    } else if (service === 'CloudFormation') {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key1_test-key2:${testKey}}`
     } else {
       serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}}`
     }
@@ -124,6 +141,8 @@ describe('ServerlessAWSResolvers', () => {
     }
     if (subService) {
       serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}, 'test'}`
+    } else if (service === 'CloudFormation') {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key1_test-key2:${testKey}, 'test'}`
     } else {
       serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}, 'test'}`
     }
@@ -143,6 +162,8 @@ describe('ServerlessAWSResolvers', () => {
     }
     if (subService) {
       serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}, 'test'}`
+    } else if (service === 'CloudFormation') {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key1_test-key2:${testKey}, 'test'}`
     } else {
       serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}, 'test'}`
     }

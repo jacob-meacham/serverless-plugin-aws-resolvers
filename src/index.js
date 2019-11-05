@@ -166,11 +166,18 @@ async function getRDSValue(key, awsParameters) {
 async function getCFPhysicalResourceId(key, awsParameters) {
   winston.debug(`Resolving a CloudFormation stack's PhysicalResourceId by the concatenated {stackName_logicalResourceId} ${key}`)
   const cf = new AWS.CloudFormation({ ...awsParameters, apiVersion: '2014-10-31' })
-  const stackName = key.split('_')[0]
-  const logicalResourceId = key.split('_')[1]
+  const values = key.split('_')
+  let stackName = ''
+  let logicalResourceId = ''
+  if (values.length === 2) {
+    stackName = values[0]
+    logicalResourceId = values[1]
+  } else {
+    throw new Error(`Invalid format for {CloudFormationStackName}_{PhysicalResourceId}, given: ${key}`)
+  }
   const result = await cf.describeStackResource({ LogicalResourceId: logicalResourceId, StackName: stackName }).promise()
   if (!result) {
-    throw new Error(`Could not find any cloudformation PhysicalResourceId with identifier ${key}`)
+    throw new Error(`Could not find in CloudFormationStack: ${stackName} any PhysicalResourceId associated with LogicalResourceId: ${logicalResourceId}`)
   }
 
   return result.StackResourceDetail
