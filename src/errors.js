@@ -46,4 +46,28 @@ class WrongResultTypeError extends Error {
   }
 }
 
-export {AWSServiceNotFoundError, AWSInvalidKeysError, UnhandledServiceError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError}
+class AWSWrongConfigurationError extends Error {
+  constructor() {
+    super(`Wrong confirguration for AWS`)
+    this.name = 'AWSWrongConfigurationError'
+    this.sender = 'aws-resolver-plugin'
+  }
+}
+
+class AWSInvalidFormatError extends Error {
+  constructor(slug) {
+    super(`Invalid AWS format for ${slug}`)
+    this.name = 'AWSInvalidFormatError'
+    this.sender = 'aws-resolver-plugin'
+  }
+}
+
+class AWSWrongResolverError extends Error {
+  constructor(resolver) {
+    super(`Wrong resolver chosen: ${resolver}`)
+    this.name = 'AWSWrongResolverError'
+    this.sender = 'aws-resolver-plugin'
+  }
+}
+
+export {AWSServiceNotFoundError, AWSInvalidKeysError, UnhandledServiceError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError, AWSWrongConfigurationError, AWSInvalidFormatError, AWSWrongResolverError}

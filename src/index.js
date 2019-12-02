@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import winston from 'winston'
 import * as handlers from './handlers'
-import {AWSInvalidKeysError, UnhandledServiceError} from './errors'
+import {AWSInvalidKeysError, UnhandledServiceError, AWSWrongConfigurationError, AWSInvalidFormatError, AWSWrongResolverError} from './errors'
 
 const AWS_PREFIX = 'aws'
 
@@ -34,9 +34,8 @@ async function getValueFromAws(slug, region, strictMode) {
     // The format is aws:${service}:${key}:${request} or aws:${service}:${subService}:${key}:${request}.
     // eg.: aws:kinesis:stream-name:StreamARN
     // Validate the input format
-    // TODO: change that error
-    if (!slug || !region || !strictMode)
-      throw new Error(`One of the parameters is not defined`)
+
+    if (!slug || !region || typeof strictMode == 'undefined') throw new AWSWrongConfigurationError()
 
     const commonParameters = {}
     commonParameters.region = region
@@ -45,16 +44,16 @@ async function getValueFromAws(slug, region, strictMode) {
     captured = patterns.default.exec(slug)
     patterns.default.lastIndex = 0
     // TODO: change these errors
-    if (!captured || !captured.groups || !captured.input) throw new Error(`Invalid AWS format for ${slug}`)
+    if (!captured || !captured.groups || !captured.input) throw new AWSInvalidFormatError(slug)
 
     let {groups, input} = captured
 
-    if ('aws' !== groups.resolver) throw new Error(`Wrong resolver chosen: ${groups.resolver}`)
+    if ('aws' !== groups.resolver) throw new AWSWrongResolverError(groups.resolver)
 
     groups.params = groups.params.split(':').filter(String);
     groups.paramsLength = groups.params.length;
 
-    if (2 > groups.paramsLength) throw new Error(`Invalid AWS format for ${slug}`)
+    if (2 > groups.paramsLength) throw new AWSInvalidFormatError(slug)
 
     if (groups.service in AWS_HANDLERS) {
 

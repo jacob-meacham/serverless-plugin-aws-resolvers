@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk'
 import winston from 'winston'
-import {AWSServiceNotFoundError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError} from './errors'
+import {AWSServiceNotFoundError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError, UnhandledServiceError} from './errors'
 
 /**
  * @param key the name of the ElastiCache cluster to resolve
@@ -81,10 +81,6 @@ async function getEC2Value(key, awsParameters) {
   const ec2 = new AWS.EC2({...awsParameters, apiVersion: '2015-01-01'})
 
   const keys = key.split(':')
-  if (!keys.length) {
-    // TODO: change that error
-    throw new Error(`Error parsing key ${key}`)
-  }
 
   switch (keys[0]) {
     case 'vpc':
@@ -129,7 +125,7 @@ async function getEC2Value(key, awsParameters) {
       }
 
     default:
-      throw new Error(`Unsupported EC2 value. ${keys[0]}`)
+      throw new UnhandledServiceError(keys[0])
   }
 }
 

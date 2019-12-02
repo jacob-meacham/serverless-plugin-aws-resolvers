@@ -3,7 +3,7 @@ import * as helpers from './helpers'
 import {defaultValues, serviceConfs} from './config'
 import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-import {AWSServiceNotFoundError, AWSInvalidKeysError, UnhandledServiceError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError} from '../src/errors'
+import {AWSInvalidFormatError, AWSServiceNotFoundError, AWSInvalidKeysError, UnhandledServiceError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError} from '../src/errors'
 chai.use(chaiAsPromised)
 const expect = chai.expect
 
@@ -216,14 +216,17 @@ describe('Serverless AWS Resolvers Errors', () => {
       .to.be.an.instanceof(AWSInvalidKeysError)
   })
 
-  async function testUnhandledService(service, subService) {
+  async function testUnhandledService(service, subService, slug) {
     const serverless = helpers.createFakeServerless()
+    slug = slug ? service : false
 
     if (subService) {
       serverless.service.custom.myVariable = `\${aws:${service}:${subService}:test-key:unhandled}`
     } else {
       serverless.service.custom.myVariable = `\${aws:${service}:test-key:unhandled}`
     }
+
+    if (slug) serverless.service.custom.myVariable = `\${${slug}}`
 
     return serverless.variables.populateService()
   }
@@ -239,6 +242,32 @@ describe('Serverless AWS Resolvers Errors', () => {
 
     return expect(unhandledServiceError).to.eventually.be.rejected
       .to.be.an.instanceof(UnhandledServiceError)
+  })
+
+  it('should throw if service suplied for ec2 cant be handled', () => {
+    let unhandledServiceError = new Promise(function(resolve, reject) {
+      testUnhandledService('ec2', 'badservice').then((data) => {
+        resolve(data)
+      }).catch((err) => {
+        reject(err)
+      })
+    })
+
+    return expect(unhandledServiceError).to.eventually.be.rejected
+      .to.be.an.instanceof(UnhandledServiceError)
+  })
+
+  it('should throw if slug is incorrect', () => {
+    let unhandledServiceError = new Promise(function(resolve, reject) {
+      testUnhandledService('aws:servicenotresolved', null, true).then((data) => {
+        resolve(data)
+      }).catch((err) => {
+        reject(err)
+      })
+    })
+
+    return expect(unhandledServiceError).to.eventually.be.rejected
+      .to.be.an.instanceof(AWSInvalidFormatError)
   })
 
   for (const service of Object.keys(serviceConfs)) {
