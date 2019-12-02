@@ -14,13 +14,11 @@ const AWS_HANDLERS = {
   ec2: handlers.getEC2Value
 }
 
-/* eslint-disable no-useless-escape */
+/* eslint-disable */
 const patterns = {
   default: RegExp(/^(?<resolver>aws):(?<service>\w+)(?<params>(?::[\w\-\[\]\.]+)+)$/g)
 }
-// const DEFAULT_AWS_PATTERN = /^aws:\w+:[\w-.]+:[\w.\[\]]+$/
-// const SUB_SERVICE_AWS_PATTERN = /^aws:\w+:\w+:[\w-.]+:[\w.\[\]]+$/
-/* eslint-enable no-useless-escape */
+/* eslint-enable */
 
 /**
  * @param slug the variable to resolve
@@ -35,7 +33,7 @@ async function getValueFromAws(slug, region, strictMode) {
     // eg.: aws:kinesis:stream-name:StreamARN
     // Validate the input format
 
-    if (!slug || !region || typeof strictMode == 'undefined') throw new AWSWrongConfigurationError()
+    if (!slug || !region || typeof strictMode === 'undefined') throw new AWSWrongConfigurationError()
 
     const commonParameters = {}
     commonParameters.region = region
@@ -46,21 +44,20 @@ async function getValueFromAws(slug, region, strictMode) {
     // TODO: change these errors
     if (!captured || !captured.groups || !captured.input) throw new AWSInvalidFormatError(slug)
 
-    let {groups, input} = captured
+    let {groups} = captured
 
-    if ('aws' !== groups.resolver) throw new AWSWrongResolverError(groups.resolver)
+    if (groups.resolver !== 'aws') throw new AWSWrongResolverError(groups.resolver)
 
-    groups.params = groups.params.split(':').filter(String);
-    groups.paramsLength = groups.params.length;
+    groups.params = groups.params.split(':').filter(String)
+    groups.paramsLength = groups.params.length
 
-    if (2 > groups.paramsLength) throw new AWSInvalidFormatError(slug)
+    if (groups.paramsLength < 2) throw new AWSInvalidFormatError(slug)
 
     if (groups.service in AWS_HANDLERS) {
-
       let key = groups.params[0]
       let request = groups.params[1]
       // We are dealing with a subService instead of a standard service
-      if (3 == groups.paramsLength) {
+      if (groups.paramsLength === 3) {
         key = groups.params.slice(0, 2).join(':')
         request = groups.params[2]
       }
@@ -117,7 +114,7 @@ class ServerlessAWSResolvers {
       const region = serverless.service.provider.region
       const strictMode = _.get(serverless.service.custom, 'awsResolvers.strict', true)
 
-      if (!region)  throw new Error('Cannot hydrate AWS variables without a region')
+      if (!region) throw new Error('Cannot hydrate AWS variables without a region')
 
       if (slug.startsWith(`${AWS_PREFIX}:`)) return getValueFromAws(slug, region, strictMode)
 

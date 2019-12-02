@@ -32,7 +32,7 @@ async function getECSValue(key, awsParameters) {
 
     return instances[0]
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
@@ -63,7 +63,7 @@ async function getESSValue(key, awsParameters) {
 
     return result.DomainStatus
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
@@ -117,7 +117,7 @@ async function getEC2Value(key, awsParameters) {
 
         return instances[0]
       } catch (error) {
-        if (error.sender == 'aws-resolver-plugin') {
+        if (error.sender === 'aws-resolver-plugin') {
           throw error
         }
         winston.debug(error.message)
@@ -160,7 +160,7 @@ async function getVPCValue(key, awsParameters) {
 
     return instances[0]
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
@@ -199,7 +199,7 @@ async function getSubnetValue(key, awsParameters) {
 
     return instances[0]
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
@@ -229,7 +229,7 @@ async function getKinesisValue(key, awsParameters) {
 
     return result.StreamDescription
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
@@ -260,7 +260,7 @@ async function getDynamoDbValue(key, awsParameters) {
 
     return result.Table
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
@@ -298,13 +298,12 @@ async function getRDSValue(key, awsParameters) {
 
     return instances[0]
   } catch (error) {
-    if (error.sender == 'aws-resolver-plugin') {
+    if (error.sender === 'aws-resolver-plugin') {
       throw error
     }
     winston.debug(error.message)
     throw new AWSServiceNotFoundError('RDS', key)
   }
 }
-
 
 export {getECSValue, getESSValue, getKinesisValue, getDynamoDbValue, getRDSValue, getEC2Value}

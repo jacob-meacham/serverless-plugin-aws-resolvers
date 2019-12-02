@@ -1,0 +1,20 @@
+{
+    "parser": "babel-eslint",
+    "extends": ["standard", "plugin:mocha/recommended"],
+    "plugins": ["mocha"],
+    "env": {
+      "mocha": true,
+      "node": true
+    },
+    "rules": {
+      "no-invalid-regexp": "off",
+      "space-before-function-paren": ["error",  {
+          "anonymous": "never",
+          "named": "never",
+          "asyncArrow": "always"
+      }]
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018
+    }
+}

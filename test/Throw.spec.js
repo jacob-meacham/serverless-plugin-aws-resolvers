@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk-mock'
-import * as helpers from './helpers'
-import {defaultValues, serviceConfs} from './config'
+import * as helpers from './helpers.spec'
+import {defaultValues, serviceConfs} from './config.spec'
 import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {AWSInvalidFormatError, AWSServiceNotFoundError, AWSInvalidKeysError, UnhandledServiceError, AWSEmptyResultsError, AWSTooManyResultsError, WrongResultTypeError} from '../src/errors'
