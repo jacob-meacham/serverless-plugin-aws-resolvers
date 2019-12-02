@@ -1,7 +1,8 @@
 language: node_js
 node_js:
-  - '8'
-  - '9'
+  - '10'
+  - '12'
+  - '13'
 cache: yarn
 script: npm run build
 after_success: npm run docs && npm run ci:coverage
