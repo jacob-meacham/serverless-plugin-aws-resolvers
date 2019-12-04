@@ -61,6 +61,8 @@ custom:
 ```
 
 # Version History
+* 1.4.0
+  - Add ability to get CF Physical Resource ID (thanks @supaggregator)
 * 1.3.3
   - Update versions for dependabot secruity vulnerabilities
 * 1.3.2
