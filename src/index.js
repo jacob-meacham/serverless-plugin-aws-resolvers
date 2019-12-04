@@ -157,13 +157,40 @@ async function getRDSValue(key, awsParameters) {
   return instances[0]
 }
 
+/**
+ * @param key the concatenated {stackName_logicalResourceId} of the CloudFormation to resolve physicalResourceId
+ * @param awsParameters parameters to pass to the AWS.CF constructor
+ * @returns {Promise.<String>} a promise for the resolved variable
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#describeStackResource-property
+ */
+async function getCFPhysicalResourceId(key, awsParameters) {
+  winston.debug(`Resolving a CloudFormation stack's PhysicalResourceId by the concatenated {stackName_logicalResourceId} ${key}`)
+  const cf = new AWS.CloudFormation({ ...awsParameters, apiVersion: '2014-10-31' })
+  const values = key.split('_')
+  let stackName = ''
+  let logicalResourceId = ''
+  if (values.length === 2) {
+    stackName = values[0]
+    logicalResourceId = values[1]
+  } else {
+    throw new Error(`Invalid format for {CloudFormationStackName}_{PhysicalResourceId}, given: ${key}`)
+  }
+  const result = await cf.describeStackResource({ LogicalResourceId: logicalResourceId, StackName: stackName }).promise()
+  if (!result) {
+    throw new Error(`Could not find in CloudFormationStack: ${stackName} any PhysicalResourceId associated with LogicalResourceId: ${logicalResourceId}`)
+  }
+
+  return result.StackResourceDetail
+}
+
 const AWS_HANDLERS = {
   ecs: getECSValue,
   ess: getESSValue,
   kinesis: getKinesisValue,
   dynamodb: getDynamoDbValue,
   rds: getRDSValue,
-  ec2: getEC2Value
+  ec2: getEC2Value,
+  cf: getCFPhysicalResourceId
 }
 
 /* eslint-disable no-useless-escape */
@@ -215,7 +242,6 @@ async function getValueFromAws(variableString, region, strictMode) {
         if (strictMode) {
           throw e
         }
-
         winston.debug(`Error while resolving ${variableString}: ${e.message}`)
         return null
       }

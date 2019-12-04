@@ -18,6 +18,7 @@ custom:
   subnet: ${aws:ec2:subnet:my_subnet_name:SubnetId}
   vpc: ${aws:ec2:vpc:my_vpc_name:VpcId}
   ecs: ${aws:ecs:cache_cluster_name:CacheClusterId}
+  cf: ${aws:cf:stack_name`_`logical_resource_id:PhysicalResourceId}
 ```
 
 Given a service, a key, and a property, this plugin will resolve the variable directly from AWS. This uses the IAM role of the executor of the serverless binary.
@@ -60,6 +61,8 @@ custom:
 ```
 
 # Version History
+* 1.4.0
+  - Add ability to get CF Physical Resource ID (thanks @supaggregator)
 * 1.3.3
   - Update versions for dependabot secruity vulnerabilities
 * 1.3.2
