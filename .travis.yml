@@ -15,7 +15,7 @@ before_script:
 script:
   - yarn test:unit
   - yarn test:lint
-  - yanr test:coverage
+  - yarn test:coverage
   - yarn build
 
 after_success:
