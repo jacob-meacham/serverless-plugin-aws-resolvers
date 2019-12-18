@@ -12,11 +12,15 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-script: yarn build
+script:
+  - yarn test:unit
+  - yarn test:lint
+  - yanr test:coverage
+  - yarn build
 
 after_success:
   - yarn docs:publish
-  - ./cc-test-reporter after-build --exit-code coverage/lcov.info
+  - ./cc-test-reporter after-build -r $CC_TEST_REPORTER_ID -t lcov coverage/lcov.info
 
 deploy:
   provider: pages
