@@ -6,15 +6,13 @@
 node_modules/
 .npmdebug
 npm-debug.log
+yarn-error.log
 
 # Build artifact
 lib/
 .coverage
 coverage
 .nyc_output
-
-# Generated docs
-doc/
 
 # OS
 .DS_Store
