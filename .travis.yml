@@ -7,36 +7,43 @@ node_js:
 
 cache: yarn
 
-before_script:
-  - yarn install
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-script:
-  - yarn test:unit
-  - yarn test:lint
-  - yarn test:coverage
-  - yarn build
+jobs:
+  include:
+    - stage: test
+      before_script:
+        - yarn install
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
+      script:
+        - yarn test:unit
+        - yarn test:lint
+        - yarn test:coverage
+        - yarn build
+      after_success:
+        - ./cc-test-reporter after-build -r $CC_TEST_REPORTER_ID -t lcov coverage/lcov.info
 
-after_success:
-  - yarn docs:publish
-  - ./cc-test-reporter after-build -r $CC_TEST_REPORTER_ID -t lcov coverage/lcov.info
+    - stage: publish docs
+      script: yarn docs:publish    # usually you do not want to rerun any tests
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        keep_history: true
+        local_dir: docs
+        on:
+          branch: master
 
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  keep_history: true
-  local_dir: docs
-  on:
-    tags: true
-
-deploy:
-  provider: npm
-  email: lalung.alexandre@gmail.com
-  api_key: $NPM_AUTH_TOKEN
-  on:
-    branch: master
+    - stage: NPM deploy
+      before_script:
+        - yarn install
+      script: yarn build     # usually you do not want to rerun any tests
+      deploy:
+        provider: npm
+        email: lalung.alexandre@gmail.com
+        api_key: $NPM_AUTH_TOKEN
+        on:
+          tags: true
 
 code_climate:
   repo_token:

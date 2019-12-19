@@ -1,5 +1,5 @@
 {
-  "name": "serverless-aws-arn-resolver",
+  "name": "@lumberjack-otters/serverless-aws-arn-resolver",
   "version": "0.3.3",
   "description": "Plugin that resolves deployed AWS services into variables",
   "main": "lib/index.js",
