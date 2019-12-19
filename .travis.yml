@@ -6,6 +6,7 @@ node_js:
   - '13'
 
 cache: yarn
+script: skip
 
 jobs:
   include:
