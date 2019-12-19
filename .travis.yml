@@ -29,6 +29,13 @@ deploy:
   keep_history: true
   local_dir: docs
   on:
+    tags: true
+
+deploy:
+  provider: npm
+  email: lalung.alexandre@gmail.com
+  api_key: $NPM_AUTH_TOKEN
+  on:
     branch: master
 
 code_climate:

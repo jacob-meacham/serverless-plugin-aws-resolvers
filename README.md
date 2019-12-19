@@ -2,6 +2,10 @@
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![Coverage Status](https://img.shields.io/coveralls/github/lumberjackotters/serverless-aws-arn-resolver/master?style=flat-square)](https://coveralls.io/github/lumberjackotters/serverless-aws-arn-resolver?branch=master)
 [![Build Status](https://img.shields.io/travis/lumberjackotters/serverless-aws-arn-resolver/master?style=flat-square)](https://travis-ci.org/lumberjackotters/serverless-aws-arn-resolver)
+[![Technical Debt](https://img.shields.io/codeclimate/tech-debt/lumberjackotters/serverless-aws-arn-resolver?style=flat-square)](https://codeclimate.com/github/LumberjackOtters/serverless-aws-arn-resolver)
+[![Maintainability](https://img.shields.io/codeclimate/maintainability/lumberjackotters/serverless-aws-arn-resolver?style=flat-square)](https://codeclimate.com/github/LumberjackOtters/serverless-aws-arn-resolver)
+[![Issues](https://img.shields.io/codeclimate/issues/lumberjackotters/serverless-aws-arn-resolver?style=flat-square)](https://codeclimate.com/github/LumberjackOtters/serverless-aws-arn-resolver)
+[![Coverage](https://img.shields.io/codeclimate/coverage/lumberjackotters/serverless-aws-arn-resolver?style=flat-square)](https://codeclimate.com/github/LumberjackOtters/serverless-aws-arn-resolver)
 A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, dynamodb or Kinesis.
 
 # Usage
