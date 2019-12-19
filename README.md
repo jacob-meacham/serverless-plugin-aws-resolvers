@@ -34,7 +34,7 @@ Given a service, a key, and a property, this plugin will resolve the variable di
 This plugin also exposes a command to resolve a variable `sls resolveAwsKey --k aws:ess:my_cluster_name:Endpoint`
 
 See our [webpage](https://lumberjackotters.github.io/serverless-aws-arn-resolver/) for full documentation.
-See our Changelog at https://lumberjackotters.github.io/serverless-aws-arn-resolver/CHANGELOG
+See our Changelog at https://lumberjackotters.github.io/serverless-aws-arn-resolver/#/CHANGELOG
 
 ## Array access
 
