@@ -36,13 +36,12 @@ jobs:
         local_dir: docs
 
     - stage: GitHub Release
-      script: echo "Deploying to GitHub releases ..."
+      if: tag IS present
+      script: skip
       deploy:
         provider: releases
         api_key: $GITHUB_TOKEN
         skip_cleanup: true
-        on:
-          tags: true
 
     - stage: "NPM deploy"
       if: tag IS present
