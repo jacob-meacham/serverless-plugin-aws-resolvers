@@ -9,7 +9,7 @@ cache: yarn
 
 jobs:
   include:
-    - stage: test
+    - stage: "Tests"
       before_script:
         - yarn install
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -23,7 +23,7 @@ jobs:
       after_success:
         - ./cc-test-reporter after-build -r $CC_TEST_REPORTER_ID -t lcov coverage/lcov.info
 
-    - stage: publish docs
+    - stage: "Publish docs"
       if: branch = master
       script: yarn docs:publish    # usually you do not want to rerun any tests
       deploy:
@@ -33,10 +33,9 @@ jobs:
         keep_history: true
         local_dir: docs
 
-    - stage: NPM deploy
+    - stage: "NPM deploy"
       if: tag IS present
-      before_script:
-        - yarn install
+      before_script: yarn install
       script: yarn build     # usually you do not want to rerun any tests
       deploy:
         provider: npm
