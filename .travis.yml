@@ -24,6 +24,7 @@ jobs:
         - ./cc-test-reporter after-build -r $CC_TEST_REPORTER_ID -t lcov coverage/lcov.info
 
     - stage: publish docs
+      if: branch = master
       script: yarn docs:publish    # usually you do not want to rerun any tests
       deploy:
         provider: pages
@@ -31,10 +32,9 @@ jobs:
         github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
         keep_history: true
         local_dir: docs
-        on:
-          branch: master
 
     - stage: NPM deploy
+      if: tag IS present
       before_script:
         - yarn install
       script: yarn build     # usually you do not want to rerun any tests
@@ -42,8 +42,6 @@ jobs:
         provider: npm
         email: lalung.alexandre@gmail.com
         api_key: $NPM_AUTH_TOKEN
-        on:
-          tags: true
 
 code_climate:
   repo_token:
