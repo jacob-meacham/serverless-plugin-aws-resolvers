@@ -19,6 +19,8 @@ custom:
   vpc: ${aws:ec2:vpc:my_vpc_name:VpcId}
   ecs: ${aws:ecs:cache_cluster_name:CacheClusterId}
   cf: ${aws:cf:stack_name`_`logical_resource_id:PhysicalResourceId}
+  apigateway: ${aws:apigateway:my_api_name:ApiId}
+  apigatewayv2: ${aws:apigateway:my_api_name:id}
 ```
 
 Given a service, a key, and a property, this plugin will resolve the variable directly from AWS. This uses the IAM role of the executor of the serverless binary.
