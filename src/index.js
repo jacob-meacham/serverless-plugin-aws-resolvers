@@ -186,7 +186,7 @@ async function getCFPhysicalResourceId(key, awsParameters) {
 /**
  * @param key the name of the APIGateway Api (Rest)
  * @param awsParameters parameters to pass to the AWS.ApiGateway constructor
- * @returns { Promise.<AWS.APIGateway.Api> }
+ * @returns { Promise.<AWS.APIGateway.RestApi> }
  * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApis-property
  */
 async function getAPIGatewayValue(key, awsParameters) {
@@ -195,16 +195,7 @@ async function getAPIGatewayValue(key, awsParameters) {
   const apigateway = new AWS.APIGateway({ ...awsParameters, apiVersion: '2015-07-09' })
   const apis = await apigateway.getRestApis({}).promise()
 
-  if (!apis || apis.items.length === 0) {
-    throw new Error(`Could not find any Apis: ${JSON.stringify(apis, null, 2)}`)
-  }
-
-  const matchingApis = apis.items.filter(api => api.name === key)
-  if (matchingApis.length !== 1) {
-    throw new Error(`Could not find any Api with name ${key}`)
-  }
-
-  return matchingApis[0]
+  return filterAPIGatewayApi(apis.items, 'name', key)
 }
 
 /**
@@ -219,13 +210,26 @@ async function getAPIGatewayV2Value(key, awsParameters) {
   const apigateway = new AWS.ApiGatewayV2({ ...awsParameters, apiVersion: '2018-11-29' })
   const apis = await apigateway.getApis({}).promise()
 
-  if (!apis || apis.Items.length === 0) {
-    throw new Error(`Could not find any Apis: ${JSON.stringify(apis, null, 2)}`)
+  return filterAPIGatewayApi(apis.Items, 'Name', key)
+}
+
+/**
+ * @param apiItems array with APIGateway or APIGatewayV2 objects
+ * @param nameProperty name of the property to filter on (with key)
+ * @param key the name of the APIGateway(V2) Api
+ * @returns { Promise.<AWS.ApiGatewayV2.Api> / Promise.<AWS.APIGateway.RestApi> }
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApis-property
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApis-property
+ */
+async function filterAPIGatewayApi(apiItems, nameProperty, key) {
+  if (apiItems.length === 0) {
+    throw new Error(`Could not find any Apis`)
   }
 
-  const matchingApis = apis.Items.filter(api => api.Name === key)
+  const matchingApis = apiItems.filter(api => api[nameProperty] === key)
   if (matchingApis.length !== 1) {
-    throw new Error(`Could not find any Api with name ${key}`)
+    throw new Error(`Could not find any Api with name ${key}, found:
+      ${JSON.stringify(apiItems.map(item => item[nameProperty]))}`)
   }
 
   return matchingApis[0]
