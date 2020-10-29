@@ -183,6 +183,58 @@ async function getCFPhysicalResourceId(key, awsParameters) {
   return result.StackResourceDetail
 }
 
+/**
+ * @param key the name of the APIGateway Api (Rest)
+ * @param awsParameters parameters to pass to the AWS.ApiGateway constructor
+ * @returns { Promise.<AWS.APIGateway.RestApi> }
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApis-property
+ */
+async function getAPIGatewayValue(key, awsParameters) {
+  winston.debug(`Resolving APIGateway Api with name ${key}`)
+
+  const apigateway = new AWS.APIGateway({ ...awsParameters, apiVersion: '2015-07-09' })
+  const apis = await apigateway.getRestApis({}).promise()
+
+  return filterAPIGatewayApi(apis.items, 'name', key)
+}
+
+/**
+ * @param key the name of the APIGatewayV2 Api (Websocket / HTTP)
+ * @param awsParameters parameters to pass to the AWS.ApiGatewayV2 constructor
+ * @returns { Promise.<AWS.ApiGatewayV2.Api> }
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApis-property
+ */
+async function getAPIGatewayV2Value(key, awsParameters) {
+  winston.debug(`Resolving ApiGatewayV2 Api with name ${key}`)
+
+  const apigateway = new AWS.ApiGatewayV2({ ...awsParameters, apiVersion: '2018-11-29' })
+  const apis = await apigateway.getApis({}).promise()
+
+  return filterAPIGatewayApi(apis.Items, 'Name', key)
+}
+
+/**
+ * @param apiItems array with APIGateway or APIGatewayV2 objects
+ * @param nameProperty name of the property to filter on (with key)
+ * @param key the name of the APIGateway(V2) Api
+ * @returns { Promise.<AWS.ApiGatewayV2.Api> / Promise.<AWS.APIGateway.RestApi> }
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getRestApis-property
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApis-property
+ */
+async function filterAPIGatewayApi(apiItems, nameProperty, key) {
+  if (apiItems.length === 0) {
+    throw new Error(`Could not find any Apis`)
+  }
+
+  const matchingApis = apiItems.filter(api => api[nameProperty] === key)
+  if (matchingApis.length !== 1) {
+    throw new Error(`Could not find any Api with name ${key}, found:
+      ${JSON.stringify(apiItems.map(item => item[nameProperty]))}`)
+  }
+
+  return matchingApis[0]
+}
+
 const AWS_HANDLERS = {
   ecs: getECSValue,
   ess: getESSValue,
@@ -190,7 +242,9 @@ const AWS_HANDLERS = {
   dynamodb: getDynamoDbValue,
   rds: getRDSValue,
   ec2: getEC2Value,
-  cf: getCFPhysicalResourceId
+  cf: getCFPhysicalResourceId,
+  apigateway: getAPIGatewayValue,
+  apigatewayv2: getAPIGatewayV2Value
 }
 
 /* eslint-disable no-useless-escape */

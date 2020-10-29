@@ -79,6 +79,24 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'StackResourceDetail',
       testKey: 'testKey',
       testValue: 'test-value'
+    },
+    APIGATEWAY: {
+      scope: 'apigateway',
+      service: 'APIGateway',
+      method: 'getRestApis',
+      topLevel: 'items',
+      testKey: 'testKey',
+      testValue: 'test-value',
+      serviceValue: [{name: 'test-key', testKey: 'test-value'}]
+    },
+    APIGATEWAYV2: {
+      scope: 'apigatewayv2',
+      service: 'ApiGatewayV2',
+      method: 'getApis',
+      topLevel: 'Items',
+      testKey: 'testKey',
+      testValue: 'test-value',
+      serviceValue: [{Name: 'test-key', testKey: 'test-value'}]
     }
   }
 
