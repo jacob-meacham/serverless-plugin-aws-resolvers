@@ -90,7 +90,7 @@ describe('ServerlessAWSResolvers', () => {
       serviceValue: [{name: 'test-key', testKey: 'test-value'}]
     },
     APIGATEWAYV2: {
-      scope: 'apigateway',
+      scope: 'apigatewayv2',
       service: 'ApiGatewayV2',
       method: 'getApis',
       topLevel: 'Items',
