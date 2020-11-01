@@ -4,11 +4,11 @@
 
 import AWS from 'aws-sdk-mock'
 import assert from 'assert'
-import {expect} from 'chai'
+import { expect } from 'chai'
 import Serverless from 'serverless'
 import ServerlessAWSResolvers from '../src'
 
-describe('ServerlessAWSResolvers', () => {
+describe('ServerlessAWSResolvers', function() {
   const DEFAULT_VALUE = 'MY_VARIABLE_NAME'
 
   const CONFIGS = {
@@ -21,7 +21,7 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'CacheClusters',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{testKey: 'test-value'}]
+      serviceValue: [{ testKey: 'test-value' }]
     },
     ESS: { scope: 'ess', service: 'ES', method: 'describeElasticsearchDomain', topLevel: 'DomainStatus' },
     RDS: {
@@ -31,7 +31,7 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'DBInstances',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{testKey: 'test-value'}]
+      serviceValue: [{ testKey: 'test-value' }]
     },
     RDSCHILDVAL: {
       scope: 'rds',
@@ -40,7 +40,7 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'DBInstances',
       testKey: 'testKey.testChild',
       testValue: 'test-value',
-      serviceValue: [{testKey: {testChild: 'test-value'}}]
+      serviceValue: [{ testKey: { testChild: 'test-value' } }]
     },
     EC2SecurityGroup: {
       scope: 'ec2',
@@ -50,7 +50,7 @@ describe('ServerlessAWSResolvers', () => {
       subService: 'securityGroup',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{testKey: 'test-value'}]
+      serviceValue: [{ testKey: 'test-value' }]
     },
     EC2VPC: {
       scope: 'ec2',
@@ -60,7 +60,7 @@ describe('ServerlessAWSResolvers', () => {
       subService: 'vpc',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{testKey: 'test-value'}]
+      serviceValue: [{ testKey: 'test-value', VpcId: 'test-value' }]
     },
     EC2Subnet: {
       scope: 'ec2',
@@ -70,7 +70,7 @@ describe('ServerlessAWSResolvers', () => {
       subService: 'subnet',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{testKey: 'test-value'}]
+      serviceValue: [{ testKey: 'test-value' }]
     },
     CLOUDFORMATION: {
       scope: 'cf',
@@ -87,7 +87,7 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'items',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{name: 'test-key', testKey: 'test-value'}]
+      serviceValue: [{ name: 'test-key', testKey: 'test-value' }]
     },
     APIGATEWAYV2: {
       scope: 'apigatewayv2',
@@ -96,23 +96,25 @@ describe('ServerlessAWSResolvers', () => {
       topLevel: 'Items',
       testKey: 'testKey',
       testValue: 'test-value',
-      serviceValue: [{Name: 'test-key', testKey: 'test-value'}]
+      serviceValue: [{ Name: 'test-key', testKey: 'test-value' }]
     }
   }
 
-  afterEach(() => {
+  afterEach(function() {
     AWS.restore()
   })
 
-  function createFakeServerless() {
+  async function createFakeServerless() {
     const sls = new Serverless()
+    sls.service.provider.region = 'us-east-2'
+
     // Attach the plugin
     sls.pluginManager.addPlugin(ServerlessAWSResolvers)
-    sls.init()
+    await sls.init()
     return sls
   }
 
-  async function testResolve({scope, service, method, topLevel, subService, testKey, testValue, serviceValue}) {
+  async function testResolve({ scope, service, method, topLevel, subService, testKey, testValue, serviceValue }) {
     testKey = testKey || 'TEST_KEY'
     testValue = testValue || 'TEST_VALUE'
     if (!serviceValue) {
@@ -120,7 +122,7 @@ describe('ServerlessAWSResolvers', () => {
       serviceValue[testKey] = testValue
     }
 
-    const serverless = createFakeServerless()
+    const serverless = await createFakeServerless()
 
     AWS.mock(service, method, (params, callback) => {
       const result = {}
@@ -140,8 +142,8 @@ describe('ServerlessAWSResolvers', () => {
     assert.equal(serverless.service.custom.myVariable, testValue)
   }
 
-  function testNotFound({scope, service, method}) {
-    const serverless = createFakeServerless()
+  async function testNotFound({ scope, service, method }) {
+    const serverless = await createFakeServerless()
 
     AWS.mock(service, method, (params, callback) => {
       callback(new Error('Not found'))
@@ -151,8 +153,8 @@ describe('ServerlessAWSResolvers', () => {
     expect(serverless.variables.populateService).to.throw(Error)
   }
 
-  function testResolveStrictFallback({scope, service, method, subService, testKey}) {
-    const serverless = createFakeServerless()
+  async function testResolveStrictFallback({ scope, service, method, subService, testKey }) {
+    const serverless = await createFakeServerless()
 
     serverless.service.custom.awsResolvers = {
       strict: true
@@ -172,55 +174,56 @@ describe('ServerlessAWSResolvers', () => {
     expect(serverless.variables.populateService).to.throw(Error)
   }
 
-  async function testResolveFallback({scope, service, method, subService, testKey}) {
-    const serverless = createFakeServerless()
-
-    serverless.service.custom.awsResolvers = {
-      strict: false
-    }
-    if (subService) {
-      serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:${testKey}, 'test'}`
-    } else if (service === 'CloudFormation') {
-      serverless.service.custom.myVariable = `\${aws:${scope}:test-key1_test-key2:${testKey}, 'test'}`
-    } else {
-      serverless.service.custom.myVariable = `\${aws:${scope}:test-key:${testKey}, 'test'}`
-    }
+  async function testResolveFallback({ scope, service, method, subService, testKey }) {
+    const serverless = await createFakeServerless()
 
     AWS.mock(service, method, (params, callback) => {
       callback(new Error('Not found'))
     })
 
+    serverless.service.custom.awsResolvers = {
+      strict: false
+    }
+    if (subService) {
+      serverless.service.custom.myVariable = `\${aws:${scope}:${subService}:test-key:not-set, 'test'}`
+    } else if (service === 'CloudFormation') {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key1_test-key2:not-set, 'test'}`
+    } else {
+      serverless.service.custom.myVariable = `\${aws:${scope}:test-key:not-set, 'test'}`
+    }
+
     await serverless.variables.populateService()
     assert.equal(serverless.service.custom.myVariable, 'test')
   }
 
-  it('should pass through non-AWS variables', async () => {
-    const serverless = createFakeServerless()
+  it('should pass through non-AWS variables', async function() {
+    const serverless = await createFakeServerless()
     serverless.service.custom.myVar = DEFAULT_VALUE
     await serverless.variables.populateService()
     assert.equal(serverless.service.custom.myVar, DEFAULT_VALUE)
   })
 
+  // eslint-disable-next-line mocha/no-setup-in-describe
   for (const service of Object.keys(CONFIGS)) {
-    it(`should resolve ${service}`, () => {
+    it(`should resolve ${service}`, async function() {
       testResolve(CONFIGS[service])
     })
-    it(`should throw for ${service} not found`, () => {
+    it(`should throw for ${service} not found`, async function() {
       testNotFound(CONFIGS[service])
     })
-    it(`should not resolve fallback value for ${service} in strict mode`, () => {
+    it(`should not resolve fallback value for ${service} in strict mode`, async function() {
       testResolveStrictFallback(CONFIGS[service])
     })
-    it(`should resolve fallback value for ${service} in non-strict mode`, () => {
+    it(`should resolve fallback value for ${service} in non-strict mode`, async function() {
       testResolveFallback(CONFIGS[service])
     })
   }
 
-  it('should throw for keys that are not present', () => {
-    const serverless = createFakeServerless()
+  it('should throw for keys that are not present', async function() {
+    const serverless = await createFakeServerless()
 
     AWS.mock('Kinesis', 'describeStream', (params, callback) => {
-      callback(null, {StreamDescription: {StreamARN: DEFAULT_VALUE}})
+      callback(null, { StreamDescription: { StreamARN: DEFAULT_VALUE } })
     })
 
     serverless.service.custom.foo = '${aws:kinesis:test-stream:BAD_KEY}' // eslint-disable-line

@@ -36,8 +36,8 @@
   "homepage": "https://github.com/jacob-meacham/serverless-plugin-aws-resolvers",
   "scripts": {
     "clean": "rimraf lib && mkdir lib",
-    "test": "cross-env NODE_ENV=test nyc mocha --compilers js:babel-register test/",
-    "test:watch": "mocha --compilers js:babel-register --watch test/",
+    "test": "cross-env NODE_ENV=test nyc mocha --compilers js:@babel/register test/",
+    "test:watch": "mocha --compilers js:@babel/register --watch test/",
     "check": "eslint . && npm run test",
     "build:node": "cross-env BABEL_ENV=production babel src --out-dir lib",
     "build": "npm run clean && npm run check && npm run build:node",
@@ -47,40 +47,48 @@
   },
   "dependencies": {
     "aws-sdk": "2.772.0",
-    "babel-runtime": "6.23.0",
-    "lodash": "~4.17.0",
-    "winston": "2.3.1"
+    "lodash": "^4.17.15",
+    "winston": "3.3.3"
   },
   "devDependencies": {
+    "@babel/cli": "7.12.1",
+    "@babel/core": "7.12.3",
+    "@babel/preset-env": "7.12.1",
+    "@babel/register": "7.12.1",
     "aws-sdk-mock": "5.1.0",
-    "babel-cli": "6.24.1",
-    "babel-core": "6.25.0",
-    "babel-eslint": "7.2.3",
-    "babel-plugin-add-module-exports": "0.2.1",
-    "babel-plugin-istanbul": "^4.1.4",
-    "babel-plugin-transform-object-rest-spread": "6.23.0",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "1.6.0",
-    "babel-register": "6.24.1",
-    "chai": "3.5.0",
-    "chai-as-promised": "6.0.0",
-    "coveralls": "2.13.1",
-    "cross-env": "5.0.1",
-    "esdoc": "0.5.2",
-    "eslint": "4.18.2",
-    "eslint-config-standard": "10.2.1",
-    "eslint-plugin-import": "2.7.0",
-    "eslint-plugin-mocha": "4.11.0",
-    "eslint-plugin-node": "5.1.1",
-    "eslint-plugin-promise": "3.5.0",
-    "eslint-plugin-standard": "3.0.1",
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "coveralls": "3.1.0",
+    "cross-env": "7.0.2",
+    "esdoc": "1.1.0",
+    "esdoc-standard-plugin": "1.0.0",
+    "eslint": "7.12.1",
+    "eslint-config-standard": "16.0.1",
+    "eslint-plugin-ava": "11.0.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-mocha": "8.0.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.2",
+    "gh-pages": "3.1.0",
     "mocha": "3.2.0",
-    "mocha-sinon": "2.0.0",
-    "nyc": "11.0.3",
-    "rimraf": "2.6.1",
-    "serverless": "^1.17.0"
+    "nyc": "15.1.0",
+    "rimraf": "3.0.2",
+    "serverless": "2.9.0"
   },
   "peerDependencies": {
-    "serverless": ">=1.16.0"
+    "serverless": ">=1.26.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": 7
+          }
+        }
+      ]
+    ]
   }
 }
