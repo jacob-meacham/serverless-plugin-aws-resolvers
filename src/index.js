@@ -45,7 +45,7 @@ async function getESSValue(key, awsParameters) {
  * @see http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
  */
 async function getEC2Value(key, awsParameters) {
-  const ec2 = new AWS.EC2({...awsParameters, apiVersion: '2015-01-01'})
+  const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
 
   const values = key.split(':')
 
@@ -58,8 +58,8 @@ async function getEC2Value(key, awsParameters) {
     const vpc = await getVPCValue(groupValues[0], awsParameters)
     const result = await ec2.describeSecurityGroups(
       {
-        Filters: [{Name: 'group-name', Values: [groupValues[1]]},
-          {Name: 'vpc-id', Values: [vpc.VpcId]}]
+        Filters: [{ Name: 'group-name', Values: [groupValues[1]] },
+          { Name: 'vpc-id', Values: [vpc.VpcId] }]
       }).promise()
 
     if (!result || !result.SecurityGroups.length) {
@@ -80,7 +80,7 @@ async function getVPCValue(key, awsParameters) {
   winston.debug(`Resolving vpc with name ${key}`)
   const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
   const result = await ec2.describeVpcs(
-    {Filters: [{Name: 'tag-value', Values: [key]}]}).promise()
+    { Filters: [{ Name: 'tag-value', Values: [key] }] }).promise()
 
   if (!result || !result.Vpcs.length) {
     throw new Error(`Could not find vpc with name ${key}`)
@@ -99,7 +99,7 @@ async function getSubnetValue(key, awsParameters) {
   winston.debug(`Resolving subnet with name ${key}`)
   const ec2 = new AWS.EC2({ ...awsParameters, apiVersion: '2015-01-01' })
   const result = await ec2.describeSubnets(
-    {Filters: [{Name: 'tag-value', Values: [key]}]}).promise()
+    { Filters: [{ Name: 'tag-value', Values: [key] }] }).promise()
 
   if (!result || !result.Subnets.length) {
     throw new Error(`Could not find subnet with name ${key}`)
@@ -223,7 +223,7 @@ async function getAPIGatewayV2Value(key, awsParameters) {
  */
 async function filterAPIGatewayApi(apiItems, nameProperty, key) {
   if (apiItems.length === 0) {
-    throw new Error(`Could not find any Apis`)
+    throw new Error('Could not find any Apis')
   }
 
   const matchingApis = apiItems.filter(api => api[nameProperty] === key)
@@ -276,7 +276,7 @@ async function getValueFromAws(variableString, region, strictMode) {
       }
 
       // Parse out the key and request
-      let subKey = rest.split(`${service}:`)[1]
+      const subKey = rest.split(`${service}:`)[1]
 
       let request = ''
       let key = ''
