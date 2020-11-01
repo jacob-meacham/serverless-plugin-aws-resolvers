@@ -8,7 +8,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=7.0"
+    "node": ">=12.0"
   },
   "repository": {
     "type": "git",
@@ -85,7 +85,7 @@
         "@babel/preset-env",
         {
           "targets": {
-            "node": 7
+            "node": 12
           }
         }
       ]
