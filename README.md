@@ -63,6 +63,8 @@ custom:
 ```
 
 # Version History
+* 2.0.1
+  - Correctly depend on node >= 12
 * 2.0.0
   - Large dependency upgrade, remove babel runtime dependency.
 * 1.4.0
