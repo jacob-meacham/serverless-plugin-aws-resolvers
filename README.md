@@ -63,6 +63,8 @@ custom:
 ```
 
 # Version History
+* 2.0.0
+  - Large dependency upgrade, remove babel runtime dependency.
 * 1.4.0
   - Add ability to get CF Physical Resource ID (thanks @supaggregator)
 * 1.3.3
