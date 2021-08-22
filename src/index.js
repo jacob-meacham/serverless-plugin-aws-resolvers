@@ -326,7 +326,8 @@ class ServerlessAWSResolvers {
         options: {
           key: {
             usage: 'The key to resolve',
-            shortcut: 'k'
+            shortcut: 'k',
+            type: 'string'
           }
         }
       }
