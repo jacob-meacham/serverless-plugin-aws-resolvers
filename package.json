@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-aws-resolvers",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Plugin that resolves deployed AWS services into variables",
   "main": "lib/index.js",
   "files": [
