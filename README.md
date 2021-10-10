@@ -63,6 +63,9 @@ custom:
 ```
 
 # Version History
+* 2.0.2
+  - Dependency security update
+  - Fix deprecation warning (Thanks @dnicolson)
 * 2.0.1
   - Correctly depend on node >= 12
 * 2.0.0
