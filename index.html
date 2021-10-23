@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl">
+  <title data-ice="title">Home | serverless-plugin-aws-resolvers</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Plugin that resolves deployed AWS services into variables"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="serverless-plugin-aws-resolvers"><meta property="twitter:description" content="Plugin that resolves deployed AWS services into variables"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/jacob-meacham/serverless-plugin-aws-resolvers"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="serverless-plugin-aws-resolvers">serverless-plugin-aws-resolvers</h1><p><a href="http://www.serverless.com"><img src="http://public.serverless.com/badges/v3.svg" alt="serverless"></a>
+<a href="https://coveralls.io/github/jacob-meacham/serverless-plugin-aws-resolvers?branch=develop"><img src="https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-aws-resolvers/badge.svg?branch=develop" alt="Coverage Status"></a>
+<a href="https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers"><img src="https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers.svg?branch=develop" alt="Build Status"></a></p>
+<p>A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, dynamodb or Kinesis.</p>
+<h1 id="usage">Usage</h1><pre><code class="lang-yaml"><code class="source-code prettyprint">custom:
+  # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ES.html#describeElasticsearchDomain-property
+  ess: ${aws:ess:my_cluster_name:Endpoint}
+  # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
+  rds: ${aws:rds:my_db_name:InstanceCreateTime}
+  kinesis: ${aws:kinesis:my_kinesis_stream:StreamARN}
+  dynamodb: ${aws:dynamodb:my_dynamodb_table:LatestStreamArn}
+  securityGroup: ${aws:ec2:securityGroup:my_vpc_name-my_group_name:GroupId}
+  subnet: ${aws:ec2:subnet:my_subnet_name:SubnetId}
+  vpc: ${aws:ec2:vpc:my_vpc_name:VpcId}
+  ecs: ${aws:ecs:cache_cluster_name:CacheClusterId}
+  cf: ${aws:cf:stack_name`_`logical_resource_id:PhysicalResourceId}
+  apigateway: ${aws:apigateway:my_api_name:id}
+  apigatewayv2: ${aws:apigatewayv2:my_api_name:ApiId}</code>
+</code></pre>
+<p>Given a service, a key, and a property, this plugin will resolve the variable directly from AWS. This uses the IAM role of the executor of the serverless binary.</p>
+<p>This plugin also exposes a command to resolve a variable <code>sls resolveAwsKey --k aws:ess:my_cluster_name:Endpoint</code></p>
+<p>See our <a href="https://jacob-meacham.github.io/serverless-plugin-aws-resolvers/">webpage</a> for full documentation.</p>
+<h2 id="array-access">Array access</h2><p>To access values in arrays (for example the ElastiCache Endpoint in CacheNodes), the <code>variableSyntax</code> of serverless needs to be amended.</p>
+<pre><code class="lang-yaml"><code class="source-code prettyprint">provider:
+  variableSyntax: &quot;\\${([ ~:a-zA-Z0-9._\\&apos;\&quot;,\\-\\/\\(\\)\\[\\]]+?)}&quot;
+
+  environment:
+    ECS_ADDRESS: ${aws:ecs:ecs-instance:CacheNodes[0].Endpoint.Address}</code>
+</code></pre>
+<h1 id="configurations">Configurations</h1><p>This plugin has one available configuration option at the moment.</p>
+<pre><code class="lang-yaml"><code class="source-code prettyprint">custom:
+  awsResolvers:
+    strict: true</code>
+</code></pre>
+<p>Disabling strict mode allows values of non-existing infrastructure to be overwritten by other values. This is especially useful when the serverless configuration also contains the CloudFormation template to create this infrastructure. On the first run the value would not be available and would prevent the template from being applied.</p>
+<p>Values can be overwritten like this:</p>
+<pre><code class="lang-yaml"><code class="source-code prettyprint">custom:
+  awsResolvers:
+    strict: false
+  rds: ${aws:rds:my_db_name:InstanceCreateTime, &apos;not created yet&apos;}</code>
+</code></pre>
+<h1 id="version-history">Version History</h1><ul>
+<li>2.0.2<ul>
+<li>Dependency security update</li>
+<li>Fix deprecation warning (Thanks @dnicolson)</li>
+</ul>
+</li>
+<li>2.0.1<ul>
+<li>Correctly depend on node &gt;= 12</li>
+</ul>
+</li>
+<li>2.0.0<ul>
+<li>Large dependency upgrade, remove babel runtime dependency.</li>
+</ul>
+</li>
+<li>1.4.0<ul>
+<li>Add ability to get CF Physical Resource ID (thanks @supaggregator)</li>
+</ul>
+</li>
+<li>1.3.3<ul>
+<li>Update versions for dependabot secruity vulnerabilities</li>
+</ul>
+</li>
+<li>1.3.2<ul>
+<li>Fix security issue with lodash (thanks @rmbl)</li>
+</ul>
+</li>
+<li>1.3.1<ul>
+<li>Add support for elasticache resources (thanks @rmbl)</li>
+</ul>
+</li>
+<li>1.3.0<ul>
+<li>Add a strict mode flag and don&apos;t error on non-existing infrastructure when strict mode is not on (thanks @rmbl)</li>
+</ul>
+</li>
+<li>1.2.1<ul>
+<li>Allow object access for the variable name (thanks @rmbl)</li>
+</ul>
+</li>
+<li>1.2.0<ul>
+<li>Add support for DynamoDB stream ARN (thanks @geronimo-iia)</li>
+</ul>
+</li>
+<li>1.1.0<ul>
+<li>Add support for EC2 resources (thanks @kevgliss)</li>
+</ul>
+</li>
+<li>1.0.0<ul>
+<li>Initial release</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
