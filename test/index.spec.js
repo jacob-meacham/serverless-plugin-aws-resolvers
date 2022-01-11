@@ -42,6 +42,15 @@ describe('ServerlessAWSResolvers', function() {
       testValue: 'test-value',
       serviceValue: [{ testKey: { testChild: 'test-value' } }]
     },
+    RDSAURORA: {
+      scope: 'rdsaurora',
+      service: 'RDS',
+      method: 'describeDBClusters',
+      topLevel: 'DBClusters',
+      testKey: 'testKey.testChild',
+      testValue: 'test-value',
+      serviceValue: [{ testKey: { testChild: 'test-value' } }]
+    },
     EC2SecurityGroup: {
       scope: 'ec2',
       service: 'EC2',
