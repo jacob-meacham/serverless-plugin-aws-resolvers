@@ -12,6 +12,8 @@ custom:
   ess: ${aws:ess:my_cluster_name:Endpoint}
   # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   rds: ${aws:rds:my_db_name:InstanceCreateTime}
+  # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
+  rdsaurora: ${aws:rdsaurora:my_cluster_name:Endpoint}
   kinesis: ${aws:kinesis:my_kinesis_stream:StreamARN}
   dynamodb: ${aws:dynamodb:my_dynamodb_table:LatestStreamArn}
   securityGroup: ${aws:ec2:securityGroup:my_vpc_name-my_group_name:GroupId}
