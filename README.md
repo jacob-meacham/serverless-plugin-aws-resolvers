@@ -65,6 +65,9 @@ custom:
 ```
 
 # Version History
+* 2.1.0
+  - Broad dependency update
+  - Add Aurora clusters (thanks @kschusternetformic)
 * 2.0.2
   - Dependency security update
   - Fix deprecation warning (Thanks @dnicolson)
