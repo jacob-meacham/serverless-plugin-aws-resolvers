@@ -1,7 +1,7 @@
 # serverless-plugin-aws-resolvers
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-aws-resolvers/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/serverless-plugin-aws-resolvers?branch=develop)
-[![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers)
+![Build Status](https://github.com/jacob-meacham/serverless-plugin-aws-resolvers/actions/workflows/ci.yml/badge.svg)
 
 A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, dynamodb or Kinesis.
 
