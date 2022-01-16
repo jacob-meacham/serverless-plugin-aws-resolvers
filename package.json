@@ -43,7 +43,7 @@
     "build": "npm run clean && npm run check && npm run build:node",
     "docs": "esdoc .",
     "docs:deploy": "npm run docs && gh-pages -d doc",
-    "ci:coverage": "nyc report --reporter=text-lcov | coveralls"
+    "ci:coverage": "nyc report --reporter=lcov"
   },
   "dependencies": {
     "aws-sdk": "2.772.0",
