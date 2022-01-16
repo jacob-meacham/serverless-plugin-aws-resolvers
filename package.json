@@ -46,7 +46,7 @@
     "ci:coverage": "nyc report --reporter=lcov"
   },
   "dependencies": {
-    "aws-sdk": "2.772.0",
+    "aws-sdk": "2.814.0",
     "lodash": "^4.17.15",
     "winston": "3.3.3"
   },
