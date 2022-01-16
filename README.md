@@ -1,7 +1,7 @@
 # serverless-plugin-aws-resolvers
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/serverless-plugin-aws-resolvers/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/serverless-plugin-aws-resolvers?branch=develop)
-[![Build Status](https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers.svg?branch=develop)](https://travis-ci.org/jacob-meacham/serverless-plugin-aws-resolvers)
+![Build Status](https://github.com/jacob-meacham/serverless-plugin-aws-resolvers/actions/workflows/ci.yml/badge.svg)
 
 A plugin for the serverless framework that resolves deployed AWS services to variables from ESS, RDS, EC2, dynamodb or Kinesis.
 
@@ -12,6 +12,8 @@ custom:
   ess: ${aws:ess:my_cluster_name:Endpoint}
   # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   rds: ${aws:rds:my_db_name:InstanceCreateTime}
+  # See https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
+  rdsaurora: ${aws:rdsaurora:my_cluster_name:Endpoint}
   kinesis: ${aws:kinesis:my_kinesis_stream:StreamARN}
   dynamodb: ${aws:dynamodb:my_dynamodb_table:LatestStreamArn}
   securityGroup: ${aws:ec2:securityGroup:my_vpc_name-my_group_name:GroupId}
@@ -63,6 +65,9 @@ custom:
 ```
 
 # Version History
+* 2.1.0
+  - Broad dependency update
+  - Add Aurora clusters (thanks @kschusternetformic)
 * 2.0.2
   - Dependency security update
   - Fix deprecation warning (Thanks @dnicolson)

@@ -158,6 +158,29 @@ async function getRDSValue(key, awsParameters) {
 }
 
 /**
+ * @param key the name of the RDS Aurora cluster to resolve
+ * @param awsParameters parameters to pass to the AWS.RDS constructor
+ * @returns {Promise.<AWS.RDS.DBCluster>}
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
+ */
+async function getRDSAuroraValue(key, awsParameters) {
+  winston.debug(`Resolving RDS Aurora cluster with name ${key}`)
+  const rds = new AWS.RDS({ ...awsParameters, apiVersion: '2014-10-31' })
+  const result = await rds.describeDBClusters({ DBClusterIdentifier: key }).promise()
+  if (!result) {
+    throw new Error(`Could not find any RDS Aurora clusters with identifier ${key}`)
+  }
+  // Parse out the clusters
+  const clusters = result.DBClusters
+
+  if (clusters.length !== 1) {
+    throw new Error(`Expected exactly one RDS Aurora cluster for key ${key}. Got ${Object.keys(clusters)}`)
+  }
+
+  return clusters[0]
+}
+
+/**
  * @param key the concatenated {stackName_logicalResourceId} of the CloudFormation to resolve physicalResourceId
  * @param awsParameters parameters to pass to the AWS.CF constructor
  * @returns {Promise.<String>} a promise for the resolved variable
@@ -241,6 +264,7 @@ const AWS_HANDLERS = {
   kinesis: getKinesisValue,
   dynamodb: getDynamoDbValue,
   rds: getRDSValue,
+  rdsaurora: getRDSAuroraValue,
   ec2: getEC2Value,
   cf: getCFPhysicalResourceId,
   apigateway: getAPIGatewayValue,
